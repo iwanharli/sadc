@@ -23,12 +23,13 @@ const nextConfig: NextConfig = {
             value: [
               "default-src 'self'",
               // Next.js membutuhkan inline script; 'unsafe-eval' hanya untuk mode pengembangan
-              `script-src 'self' 'unsafe-inline'${produksi ? "" : " 'unsafe-eval'"}`,
+              // static.cloudflareinsights.com: beacon Web Analytics yang disisipkan Cloudflare
+              `script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com${produksi ? "" : " 'unsafe-eval'"}`,
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob:",
               "font-src 'self' data:",
               // websocket HMR saat pengembangan
-              `connect-src 'self'${produksi ? "" : " ws: wss:"}`,
+              `connect-src 'self' https://cloudflareinsights.com${produksi ? "" : " ws: wss:"}`,
               "media-src 'self' blob:",
               "frame-ancestors 'none'",
               "base-uri 'self'",
