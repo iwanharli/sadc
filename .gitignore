@@ -47,3 +47,6 @@ next-env.d.ts
 
 # dokumen internal (proposal) tidak dipublikasikan
 /docs/*.pdf
+/.next-build/
+/.next.prev/
+/.deploy.env

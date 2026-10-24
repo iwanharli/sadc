@@ -69,3 +69,16 @@ src/
 scripts/seed.ts
 drizzle/          file migrasi
 ```
+
+## Deploy
+
+Deploy ke server produksi (https://sadc.kecup.in) dari komputer lokal:
+
+```bash
+./deploy.sh            # push ke GitHub, lalu update server (build terpisah + cek kesehatan + rollback otomatis bila gagal)
+./deploy.sh status     # status pm2 & cek situs
+./deploy.sh logs       # log aplikasi
+./deploy.sh rollback   # kembali ke build sebelumnya
+```
+
+Autentikasi memakai SSH key. Tanpa key, berikan sandi sekali jalan: `SSHPASS='...' ./deploy.sh` (butuh `sshpass`). Tujuan (host, folder, nama pm2) bisa diubah lewat file `.deploy.env` (tidak masuk git).
