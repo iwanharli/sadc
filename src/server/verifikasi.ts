@@ -2,6 +2,7 @@ import { and, eq, inArray, ne, sql } from "drizzle-orm"
 import type { PendataanData } from "@/lib/pendataan-schema"
 import { PENDIDIKAN_MIN } from "@/lib/pendataan-schema"
 import { db, schema } from "./db"
+import { hashNik } from "./nik"
 
 /**
  * Mesin verifikasi otomatis. Setiap aturan berdiri sendiri dan mengembalikan
@@ -23,6 +24,24 @@ export async function jenisDokumenUntuk(profesi: PendataanData["profesi"]) {
     .from(schema.jenisDokumen)
     .where(and(eq(schema.jenisDokumen.aktif, true), inArray(schema.jenisDokumen.profesi, ["UMUM", profesi])))
     .orderBy(schema.jenisDokumen.urutan)
+}
+
+/** Apakah pemohon sudah pernah diterbitkan KTA untuk profesi yang sama (di luar pengajuan ini)? */
+export async function adaKtaSebelumnya(nik: string, profesi: PendataanData["profesi"], kecuali?: number) {
+  const [row] = await db
+    .select({ id: schema.kartu.id })
+    .from(schema.kartu)
+    .innerJoin(schema.pengajuan, eq(schema.kartu.pengajuanId, schema.pengajuan.id))
+    .innerJoin(schema.pemohon, eq(schema.pengajuan.pemohonId, schema.pemohon.id))
+    .where(
+      and(
+        eq(schema.pemohon.nikHash, hashNik(nik)),
+        eq(schema.pengajuan.profesi, profesi),
+        kecuali ? ne(schema.pengajuan.id, kecuali) : undefined,
+      ),
+    )
+    .limit(1)
+  return !!row
 }
 
 const umur = (lahir: string, hariIni: string) => {
@@ -71,7 +90,7 @@ export const ATURAN: Aturan[] = [
         .leftJoin(schema.kartu, eq(schema.kartu.pengajuanId, schema.pengajuan.id))
         .where(
           and(
-            eq(schema.pemohon.nik, data.nik),
+            eq(schema.pemohon.nikHash, hashNik(data.nik)),
             eq(schema.pengajuan.profesi, data.profesi),
             pengajuanId ? ne(schema.pengajuan.id, pengajuanId) : undefined,
           ),
@@ -93,7 +112,7 @@ export const ATURAN: Aturan[] = [
         .from(schema.blacklist)
         .where(
           and(
-            eq(schema.blacklist.nik, data.nik),
+            eq(schema.blacklist.nikHash, hashNik(data.nik)),
             eq(schema.blacklist.aktif, true),
             sql`(${schema.blacklist.berlakuSd} is null or ${schema.blacklist.berlakuSd} >= ${hariIni})`,
           ),
@@ -134,9 +153,12 @@ export const ATURAN: Aturan[] = [
   {
     kode: "DOKUMEN",
     nama: "Dokumen wajib lengkap & berlaku",
-    cek: async ({ data, hariIni }) => {
+    cek: async ({ data, hariIni, pengajuanId }) => {
       const k: string[] = []
+      // KTA lama yang sudah tercatat di sistem tidak perlu diunggah ulang
+      const ktaTercatat = data.jenis !== "BARU" && (await adaKtaSebelumnya(data.nik, data.profesi, pengajuanId))
       for (const j of await jenisDokumenUntuk(data.profesi)) {
+        if (j.kode === "KTA_LAMA" && ktaTercatat) continue
         const wajib = j.wajib && (!j.wajibUntuk?.length || j.wajibUntuk.includes(data.jenis))
         const d = data.dokumen[String(j.id)]
         if (!d?.fileKey) {

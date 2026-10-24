@@ -75,8 +75,20 @@ if [[ ! -d node_modules ]] || ! git diff --quiet "$lama" "$baru" -- package-lock
   npm ci --no-audit --no-fund --loglevel=error
 fi
 
+# kunci enkripsi wajib ada sebelum migrasi data; dibuat sekali bila belum ada
+for k in STORAGE_ENC_KEY NIK_KEY; do
+  if ! grep -q "^$k=." .env; then
+    sed -i "/^$k=/d" .env
+    echo "$k=$(openssl rand -base64 32)" >> .env
+    info "membuat $k baru di .env — CADANGKAN file .env (kunci hilang = data tidak terbaca)"
+  fi
+done
+
 info "migrasi database"
 npx drizzle-kit migrate 2>&1 | grep -E "applied|error" || true
+info "enkripsi data lama (NIK & file) bila ada"
+npm run --silent nik:enkripsi
+npm run --silent storage:enkripsi
 
 info "build (folder terpisah agar versi berjalan tidak terganggu)"
 rm -rf .next-build

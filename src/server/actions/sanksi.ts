@@ -32,7 +32,7 @@ export async function ubahStatusKta(input: SanksiInput): Promise<Hasil<{ status:
     const t = TRANSISI[d.jenis]
 
     const [row] = await db
-      .select({ kartu: schema.kartu, poldaId: schema.pengajuan.poldaId, pengajuanId: schema.pengajuan.id, nik: schema.pemohon.nik })
+      .select({ kartu: schema.kartu, poldaId: schema.pengajuan.poldaId, pengajuanId: schema.pengajuan.id, nikHash: schema.pemohon.nikHash, nikEnc: schema.pemohon.nikEnc })
       .from(schema.kartu)
       .innerJoin(schema.pengajuan, eq(schema.kartu.pengajuanId, schema.pengajuan.id))
       .innerJoin(schema.pemohon, eq(schema.pengajuan.pemohonId, schema.pemohon.id))
@@ -70,7 +70,8 @@ export async function ubahStatusKta(input: SanksiInput): Promise<Hasil<{ status:
       if (blacklist) {
         const [y, m, dd] = hariIni.split("-").map(Number)
         await tx.insert(schema.blacklist).values({
-          nik: row.nik,
+          nikHash: row.nikHash,
+          nikEnc: row.nikEnc,
           alasan: `KTA ${row.kartu.noKta} dicabut — dokumen palsu`,
           sanksiId: s.id,
           berlakuSd: `${y + BLACKLIST_TAHUN}-${String(m).padStart(2, "0")}-${String(dd).padStart(2, "0")}`,
@@ -95,7 +96,7 @@ export async function hapusBlacklist(id: number, catatan: string): Promise<Hasil
       .update(schema.blacklist)
       .set({ aktif: false })
       .where(and(eq(schema.blacklist.id, id), eq(schema.blacklist.aktif, true)))
-      .returning({ nik: schema.blacklist.nik })
+      .returning({ id: schema.blacklist.id })
     if (!row) throw new Error("Entri blacklist tidak ditemukan")
     await catatAudit(user.id, "HAPUS_BLACKLIST", "blacklist", id, { catatan })
     revalidatePath("/admin/blacklist")

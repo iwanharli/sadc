@@ -43,6 +43,20 @@
       "when": 1792854034570,
       "tag": "0005_unggahan",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792861477898,
+      "tag": "0006_polres",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792861826988,
+      "tag": "0007_nik_terenkripsi",
+      "breakpoints": true
     }
   ]
 }

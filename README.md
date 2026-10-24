@@ -23,6 +23,7 @@ Perintah lain:
 | `./run.sh reset-db` | Hapus & buat ulang database (minta konfirmasi) |
 | `./run.sh studio` | Buka Drizzle Studio |
 | `npm run job:kedaluwarsa` | Jalankan manual pemeriksaan KTA kedaluwarsa (otomatis tiap jam via pg-boss) |
+| `npm run nik:enkripsi` | Enkripsi NIK lama (polos) ke kolom hash + terenkripsi |
 | `npm run storage:enkripsi` | Enkripsi file unggahan lama yang belum terenkripsi |
 | `./run.sh lint` | Typecheck & lint |
 | `./run.sh help` | Bantuan |

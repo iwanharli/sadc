@@ -1,7 +1,8 @@
 import "server-only"
-import { and, count, desc, eq, ilike, inArray, or, type SQL } from "drizzle-orm"
+import { and, count, desc, eq, ilike, inArray, or, sql, type SQL } from "drizzle-orm"
 import type { PendataanInput } from "@/lib/pendataan-schema"
 import { db, schema } from "./db"
+import { dekripsiNik, hashNik } from "./nik"
 
 /** Data awal formulir untuk melengkapi draf. */
 export async function muatPendataan(id: number, poldaId: number): Promise<PendataanInput | null> {
@@ -15,7 +16,7 @@ export async function muatPendataan(id: number, poldaId: number): Promise<Pendat
   return {
     profesi: p.profesi,
     jenis: p.jenis,
-    nik: pemohon.nik,
+    nik: dekripsiNik(pemohon.nikEnc),
     nama: pemohon.nama,
     tempatLahir: pemohon.tempatLahir ?? "",
     tglLahir: pemohon.tglLahir ?? "",
@@ -88,13 +89,13 @@ export async function daftarPemohon(f: FilterPemohon) {
     f.status ? eq(schema.pengajuan.status, f.status) : undefined,
     f.profesi ? eq(schema.pengajuan.profesi, f.profesi) : undefined,
   ]
+  // NIK terenkripsi: 16 digit dicari persis lewat hash, ≤ 6 digit lewat kode wilayah (awal NIK)
   const q = f.q?.trim()
   if (q) {
-    kondisi.push(
-      /^\d+$/.test(q)
-        ? ilike(schema.pemohon.nik, `${q}%`)
-        : or(ilike(schema.pemohon.nama, `%${q}%`), ilike(schema.pengajuan.noRegistrasi, `%${q}%`)),
-    )
+    if (/^\d{16}$/.test(q)) kondisi.push(eq(schema.pemohon.nikHash, hashNik(q)))
+    else if (/^\d{1,6}$/.test(q)) kondisi.push(ilike(schema.pemohon.nikWilayah, `${q}%`))
+    else if (/^\d+$/.test(q)) kondisi.push(sql`false`)
+    else kondisi.push(or(ilike(schema.pemohon.nama, `%${q}%`), ilike(schema.pengajuan.noRegistrasi, `%${q}%`)))
   }
   const where = and(...kondisi)
 
@@ -108,7 +109,7 @@ export async function daftarPemohon(f: FilterPemohon) {
         status: schema.pengajuan.status,
         kekurangan: schema.pengajuan.kekurangan,
         createdAt: schema.pengajuan.createdAt,
-        nik: schema.pemohon.nik,
+        nikEnc: schema.pemohon.nikEnc,
         nama: schema.pemohon.nama,
         perusahaan: schema.perusahaan.nama,
         polda: schema.polda.nama,
@@ -134,7 +135,13 @@ export async function daftarPemohon(f: FilterPemohon) {
       .innerJoin(schema.pemohon, eq(schema.pengajuan.pemohonId, schema.pemohon.id))
       .where(where),
   ])
-  return { rows, total, page, perPage, pages: Math.max(1, Math.ceil(total / perPage)) }
+  return {
+    rows: rows.map(({ nikEnc, ...r }) => ({ ...r, nik: dekripsiNik(nikEnc) })),
+    total,
+    page,
+    perPage,
+    pages: Math.max(1, Math.ceil(total / perPage)),
+  }
 }
 
 /** Detail lengkap satu pengajuan (dibatasi Polda bila poldaId diisi). */
@@ -189,7 +196,7 @@ export async function detailPengajuan(id: number, poldaId?: number | null) {
     : []
   return {
     pengajuan: p,
-    pemohon: pemohon!,
+    pemohon: { ...pemohon!, nik: dekripsiNik(pemohon!.nikEnc) },
     polda: polda!,
     perusahaan,
     operator: operator?.name ?? "-",

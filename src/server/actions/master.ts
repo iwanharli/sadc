@@ -2,7 +2,16 @@
 
 import { and, eq, ne } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
-import { jenisDokumenSchema, perusahaanSchema, type JenisDokumenInput, type PerusahaanInput } from "@/lib/master-schema"
+import {
+  jenisDokumenSchema,
+  perusahaanSchema,
+  poldaSchema,
+  polresSchema,
+  type JenisDokumenInput,
+  type PerusahaanInput,
+  type PoldaInput,
+  type PolresInput,
+} from "@/lib/master-schema"
 import { catatAudit } from "../audit"
 import { requireUser } from "../auth"
 import { db, schema } from "../db"
@@ -41,6 +50,47 @@ export async function simpanPerusahaan(input: PerusahaanInput, id?: number): Pro
     else await db.insert(schema.perusahaan).values(d)
     await catatAudit(admin.id, "UBAH_MASTER", "perusahaan", id ?? null, { nama: d.nama, aktif: d.aktif })
     revalidatePath("/admin/perusahaan")
+    return { ok: true }
+  } catch (e) {
+    return gagal(e)
+  }
+}
+
+export async function simpanPolda(input: PoldaInput, id?: number): Promise<Hasil> {
+  try {
+    const admin = await requireUser("ADMIN")
+    const r = poldaSchema.safeParse(input)
+    if (!r.success) throw new Error(r.error.issues[0]?.message)
+    const d = r.data
+    const bentrok = await db.query.polda.findFirst({
+      where: and(eq(schema.polda.kode, d.kode), id ? ne(schema.polda.id, id) : undefined),
+    })
+    if (bentrok) throw new Error("Kode Polda sudah dipakai")
+    if (id) await db.update(schema.polda).set(d).where(eq(schema.polda.id, id))
+    else await db.insert(schema.polda).values(d)
+    await catatAudit(admin.id, "UBAH_MASTER", "polda", id ?? null, { kode: d.kode, provinsi: d.provinsiKode })
+    revalidatePath("/admin/master/wilayah")
+    return { ok: true }
+  } catch (e) {
+    return gagal(e)
+  }
+}
+
+export async function simpanPolres(input: PolresInput, id?: number): Promise<Hasil> {
+  try {
+    const admin = await requireUser("ADMIN")
+    const r = polresSchema.safeParse(input)
+    if (!r.success) throw new Error(r.error.issues[0]?.message)
+    const d = r.data
+    const polda = await db.query.polda.findFirst({ where: eq(schema.polda.id, d.poldaId) })
+    if (!polda) throw new Error("Polda tidak ditemukan")
+    // kab/kota harus berada di provinsi cakupan Polda
+    const luar = d.kabupatenKode.filter((k) => !polda.provinsiKode.includes(k.slice(0, 2)))
+    if (luar.length) throw new Error("Ada kab/kota di luar provinsi cakupan Polda")
+    if (id) await db.update(schema.polres).set(d).where(eq(schema.polres.id, id))
+    else await db.insert(schema.polres).values(d)
+    await catatAudit(admin.id, "UBAH_MASTER", "polres", id ?? null, { nama: d.nama, polda: polda.kode })
+    revalidatePath("/admin/master/wilayah")
     return { ok: true }
   } catch (e) {
     return gagal(e)

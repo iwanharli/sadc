@@ -14,7 +14,8 @@
     "db:wilayah": "tsx scripts/import-wilayah.ts",
     "db:demo": "tsx scripts/seed-demo.ts",
     "storage:enkripsi": "tsx scripts/enkripsi-file.ts",
-    "job:kedaluwarsa": "tsx scripts/job-kedaluwarsa.ts"
+    "job:kedaluwarsa": "tsx scripts/job-kedaluwarsa.ts",
+    "nik:enkripsi": "tsx scripts/enkripsi-nik.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.2",

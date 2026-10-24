@@ -69,7 +69,10 @@ export const polres = pgTable("polres", {
     .notNull()
     .references(() => polda.id),
   nama: text("nama").notNull(),
-})
+  // kode kab/kota Kemendagri yang menjadi wilayah hukum Polres
+  kabupatenKode: varchar("kabupaten_kode", { length: 5 }).array().notNull().default([]),
+  aktif: boolean("aktif").notNull().default(true),
+}, (t) => [index("polres_polda_idx").on(t.poldaId)])
 
 // ---------- Auth (Better Auth) ----------
 
@@ -157,7 +160,11 @@ export const jenisDokumen = pgTable("jenis_dokumen", {
 
 export const pemohon = pgTable("pemohon", {
   id: serial("id").primaryKey(),
-  nik: varchar("nik", { length: 16 }).notNull().unique(),
+  // NIK polos (lama) — dikosongkan setelah dienkripsi oleh scripts/enkripsi-nik.ts, akan dihapus
+  nik: varchar("nik", { length: 16 }).unique(),
+  nikHash: varchar("nik_hash", { length: 64 }).unique(),
+  nikEnc: text("nik_enc"),
+  nikWilayah: varchar("nik_wilayah", { length: 6 }),
   nama: text("nama").notNull(),
   tempatLahir: text("tempat_lahir"),
   tglLahir: date("tgl_lahir"),
@@ -172,7 +179,7 @@ export const pemohon = pgTable("pemohon", {
   ttdUrl: text("ttd_url"),
   sidikJariUrl: text("sidik_jari_url"),
   ...timestamps,
-})
+}, (t) => [index("pemohon_nik_wilayah_idx").on(t.nikWilayah)])
 
 export const pengajuan = pgTable("pengajuan", {
   id: serial("id").primaryKey(),
@@ -270,13 +277,15 @@ export const sanksi = pgTable("sanksi", {
 
 export const blacklist = pgTable("blacklist", {
   id: serial("id").primaryKey(),
-  nik: varchar("nik", { length: 16 }).notNull(),
+  nik: varchar("nik", { length: 16 }),
+  nikHash: varchar("nik_hash", { length: 64 }),
+  nikEnc: text("nik_enc"),
   alasan: text("alasan").notNull(),
   sanksiId: integer("sanksi_id").references(() => sanksi.id),
   berlakuSd: date("berlaku_sd"),
   aktif: boolean("aktif").notNull().default(true),
   createdAt: timestamp("created_at").notNull().defaultNow(),
-})
+}, (t) => [index("blacklist_nik_hash_idx").on(t.nikHash)])
 
 // ---------- File ----------
 

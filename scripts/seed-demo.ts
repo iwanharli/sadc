@@ -7,6 +7,7 @@ import "dotenv/config"
 import { randomUUID } from "node:crypto"
 import { eq, like, sql } from "drizzle-orm"
 import { db, schema } from "../src/server/db"
+import { kolomNik } from "../src/server/nik"
 
 const TOTAL = Number(process.env.DEMO_JUMLAH ?? 2400)
 const HARI = 120
@@ -49,7 +50,8 @@ async function main() {
   await db.delete(schema.sanksi).where(sql`${schema.sanksi.kartuId} in ${kartuLama}`)
   await db.delete(schema.kartu).where(sql`${schema.kartu.pengajuanId} in ${lama}`)
   await db.delete(schema.pengajuan).where(like(schema.pengajuan.noRegistrasi, "DEMO/%"))
-  await db.delete(schema.pemohon).where(like(schema.pemohon.nik, "99%"))
+  // NIK demo diawali "99" (kode wilayah fiktif)
+  await db.delete(schema.pemohon).where(like(schema.pemohon.nikWilayah, "99%"))
   await db.delete(schema.perusahaan).where(like(schema.perusahaan.nib, "DEMO%"))
 
   // perusahaan per Polda
@@ -81,7 +83,7 @@ async function main() {
       .insert(schema.pemohon)
       .values({
         // NIK demo diawali 99 agar tidak bentrok dengan NIK asli
-        nik: `99${prov}${pad(i, 12)}`,
+        ...kolomNik(`99${prov}${pad(i, 12)}`),
         nama: `${pick(DEPAN)} ${pick(BELAKANG)}`,
         jenisKelamin: rand() < 0.85 ? "L" : "P",
         pendidikan: pick(["SMA", "SMK", "D3", "S1"]),

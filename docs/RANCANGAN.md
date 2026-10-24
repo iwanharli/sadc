@@ -168,7 +168,8 @@ Aturan:
 - `/admin/pengguna` — kelola akun operator & admin (tambah, ubah, nonaktifkan, reset sandi)
 - `/admin/audit` — audit log
 - `/admin/notifikasi`, `/admin/profil`
-- *(belum)* `/admin/master/wilayah` — Polda / Polres
+- `/admin/master/wilayah` — Polda & Polres
+- `/admin/laporan` — rekap perusahaan, kinerja operator, unduh laporan PDF
 
 ## 7. Model Data (ringkas)
 
@@ -212,8 +213,10 @@ Sudah diterapkan:
 - QR berisi token acak 144-bit, bukan data pribadi.
 - Header keamanan: CSP, `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy`, `Permissions-Policy` (kamera hanya origin sendiri), HSTS di produksi.
 
-Belum / catatan:
-- **NIK di database belum dienkripsi per kolom**: NIK dipakai untuk pencarian awalan & keunikan. Opsi berikutnya: enkripsi kolom + *blind index* (HMAC) untuk pencarian persis — konsekuensinya pencarian NIK sebagian tidak lagi bisa. Sementara itu gunakan enkripsi disk/volume database di server.
+- **NIK dienkripsi per kolom** (`NIK_KEY`): `nik_hash` (HMAC-SHA256, unik) untuk pencarian persis, cek ganda & blacklist; `nik_enc` (AES-256-GCM) hanya didekripsi saat ditampilkan; `nik_wilayah` (6 digit awal = kode kecamatan) untuk cek kecocokan alamat & pencarian per wilayah. Pencarian NIK: 16 digit (persis) atau ≤ 6 digit awal. **Cadangkan `.env` server — kunci hilang berarti NIK tidak bisa dibaca.**
+
+Catatan:
+- Kolom `nik` polos lama sudah dikosongkan oleh `npm run nik:enkripsi` dan akan dihapus pada migrasi berikutnya.
 - Rate limit verifikasi publik masih di memori (satu instance); bila multi-instance pindahkan ke Redis/Postgres.
 
 ## 9. Integrasi Hardware (tahap lanjut)
@@ -275,7 +278,10 @@ Agar mudah ditambahkan nanti, aturan verifikasi otomatis dibuat modular (setiap 
 | Notifikasi, profil & ganti sandi, audit log | ✅ |
 | Job terjadwal (pg-boss, tiap jam): KTA kedaluwarsa & blacklist berakhir, per zona waktu Polda | ✅ |
 | Enkripsi file, akses file per Polda, rate limit, header keamanan | ✅ |
-| Enkripsi kolom NIK | ⏳ (lihat §8) |
+| Enkripsi kolom NIK (hash + AES-GCM) | ✅ |
+| Perpanjangan / penggantian langsung dari KTA lama | ✅ |
+| Master Polda & Polres (provinsi cakupan, zona waktu, kab/kota Polres) | ✅ |
+| Laporan: rekap perusahaan, kinerja operator, unduh PDF | ✅ |
 | Penyimpanan MinIO, Docker Compose, tes otomatis (Vitest/Playwright) | ⏳ |
 | Integrasi hardware & instansi lain, ABIS | ⏳ ditunda |
 

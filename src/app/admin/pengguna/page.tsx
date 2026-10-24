@@ -20,7 +20,7 @@ export default async function PenggunaPage() {
         polda: schema.polda.nama,
         aktif: schema.user.aktif,
         // kolom timestamp disimpan dalam UTC; format ISO agar tidak ditafsirkan sebagai waktu lokal
-        terakhirMasuk: sql<string | null>`(select to_char(max(created_at), 'YYYY-MM-DD"T"HH24:MI:SS"Z"') from session where user_id = ${schema.user.id})`,
+        terakhirMasuk: sql<string | null>`(select to_char(max(created_at), 'YYYY-MM-DD"T"HH24:MI:SS"Z"') from session where user_id = "user".id)`,
       })
       .from(schema.user)
       .leftJoin(schema.polda, eq(schema.user.poldaId, schema.polda.id))

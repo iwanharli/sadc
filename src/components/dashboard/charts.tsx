@@ -1,6 +1,6 @@
 "use client"
 
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts"
 import {
   ChartContainer,
   ChartLegend,
@@ -69,6 +69,29 @@ export function PoldaChart({ data }: { data: { nama: string; satpam: number; dc:
         <ChartTooltip cursor={{ fill: "var(--muted)", opacity: 0.6 }} content={<ChartTooltipContent className="min-w-44 text-sm" />} />
         <Bar dataKey="satpam" stackId="a" fill="var(--color-satpam)" stroke="var(--card)" strokeWidth={1} isAnimationActive={false} />
         <Bar dataKey="dc" stackId="a" fill="var(--color-dc)" stroke="var(--card)" strokeWidth={1} isAnimationActive={false} radius={[0, 4, 4, 0]} />
+      </BarChart>
+    </ChartContainer>
+  )
+}
+
+const configPerusahaan = {
+  pendataan: { label: "Pendataan", color: "var(--series-satpam)" },
+} satisfies ChartConfig
+
+/** Perusahaan dengan pendataan terbanyak — batang horizontal, warna menurut jenis. */
+export function PerusahaanChart({ data }: { data: { nama: string; jenis: "BUJP" | "PEMBIAYAAN"; pendataan: number }[] }) {
+  const rows = data.map((d) => ({ ...d, nama: d.nama.replace(/^PT /, ""), fill: d.jenis === "BUJP" ? "var(--series-satpam)" : "var(--series-dc)" }))
+  return (
+    <ChartContainer config={configPerusahaan} className="aspect-auto w-full" style={{ height: rows.length * 38 + 24 }}>
+      <BarChart data={rows} layout="vertical" margin={{ left: 0, right: 16 }} barCategoryGap="22%">
+        <XAxis type="number" hide />
+        <YAxis type="category" dataKey="nama" tickLine={false} axisLine={false} width={260} tick={{ fontSize: 14 }} />
+        <ChartTooltip cursor={{ fill: "var(--muted)", opacity: 0.6 }} content={<ChartTooltipContent className="min-w-44 text-sm" />} />
+        <Bar dataKey="pendataan" radius={[0, 4, 4, 0]} isAnimationActive={false}>
+          {rows.map((r) => (
+            <Cell key={r.nama} fill={r.fill} />
+          ))}
+        </Bar>
       </BarChart>
     </ChartContainer>
   )

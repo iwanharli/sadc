@@ -2,8 +2,10 @@ import {
   Ban,
   Bell,
   Building2,
+  FileChartColumn,
   FileText,
   LayoutDashboard,
+  MapPinned,
   Printer,
   ScrollText,
   ShieldX,
@@ -51,6 +53,7 @@ export const adminNav: NavGroup[] = [
     items: [
       { href: "/admin/pemohon", label: "Direktori Pemohon", icon: Users },
       { href: "/admin/perusahaan", label: "Perusahaan", icon: Building2 },
+      { href: "/admin/laporan", label: "Laporan", icon: FileChartColumn },
     ],
   },
   {
@@ -64,6 +67,7 @@ export const adminNav: NavGroup[] = [
     label: "Administrasi",
     items: [
       { href: "/admin/master/dokumen", label: "Persyaratan Dokumen", icon: FileText },
+      { href: "/admin/master/wilayah", label: "Polda & Polres", icon: MapPinned },
       { href: "/admin/pengguna", label: "Pengguna", icon: UserCog },
       { href: "/admin/audit", label: "Audit Log", icon: ScrollText },
     ],

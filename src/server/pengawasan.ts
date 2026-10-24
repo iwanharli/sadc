@@ -1,6 +1,7 @@
 import "server-only"
 import { and, desc, eq, inArray, sql } from "drizzle-orm"
 import { db, schema } from "./db"
+import { dekripsiNik } from "./nik"
 
 /** KTA berstatus dibekukan/dicabut beserta sanksi terakhirnya. */
 export async function daftarSanksi(poldaId?: number | null, status?: "DIBEKUKAN" | "DICABUT") {
@@ -21,7 +22,6 @@ export async function daftarSanksi(poldaId?: number | null, status?: "DIBEKUKAN"
       pengajuanId: schema.pengajuan.id,
       profesi: schema.pengajuan.profesi,
       nama: schema.pemohon.nama,
-      nik: schema.pemohon.nik,
       polda: schema.polda.nama,
       alasan: schema.sanksi.alasan,
       keterangan: schema.sanksi.keterangan,
@@ -48,17 +48,18 @@ export async function daftarSanksi(poldaId?: number | null, status?: "DIBEKUKAN"
 }
 
 export async function daftarBlacklist() {
-  return db
+  const rows = await db
     .select({
       id: schema.blacklist.id,
-      nik: schema.blacklist.nik,
+      nikEnc: schema.blacklist.nikEnc,
       alasan: schema.blacklist.alasan,
       berlakuSd: schema.blacklist.berlakuSd,
       createdAt: schema.blacklist.createdAt,
       nama: schema.pemohon.nama,
     })
     .from(schema.blacklist)
-    .leftJoin(schema.pemohon, eq(schema.pemohon.nik, schema.blacklist.nik))
+    .leftJoin(schema.pemohon, eq(schema.pemohon.nikHash, schema.blacklist.nikHash))
     .where(eq(schema.blacklist.aktif, true))
     .orderBy(desc(schema.blacklist.createdAt))
+  return rows.map(({ nikEnc, ...r }) => ({ ...r, nik: dekripsiNik(nikEnc) }))
 }

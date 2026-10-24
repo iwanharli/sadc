@@ -71,7 +71,7 @@ export function DaftarPemohon({
           <Input
             name="q"
             defaultValue={params.q}
-            placeholder="Cari nama, NIK, atau nomor registrasi..."
+            placeholder="Cari nama, no. registrasi, NIK lengkap, atau 6 digit awal NIK..."
             className="h-11 pl-10 text-[15px]"
           />
           {params.status && <input type="hidden" name="status" value={params.status} />}
