@@ -29,6 +29,20 @@
       "when": 1792796412422,
       "tag": "0003_pendataan",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792852923577,
+      "tag": "0004_notifikasi",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792854034570,
+      "tag": "0005_unggahan",
+      "breakpoints": true
     }
   ]
 }

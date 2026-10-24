@@ -33,6 +33,11 @@ export const auth = betterAuth({
     },
   },
   rateLimit: { enabled: true, window: 60, max: 20 },
+  advanced: {
+    // cookie Secure otomatis bila diakses lewat HTTPS; paksa di produksi
+    useSecureCookies: process.env.NODE_ENV === "production" && process.env.BETTER_AUTH_URL?.startsWith("https://"),
+    defaultCookieAttributes: { sameSite: "lax", httpOnly: true },
+  },
   plugins: [username(), nextCookies()],
 })
 

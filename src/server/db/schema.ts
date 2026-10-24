@@ -84,6 +84,8 @@ export const user = pgTable("user", {
   role: roleEnum("role").notNull().default("OPERATOR"),
   poldaId: integer("polda_id").references(() => polda.id),
   aktif: boolean("aktif").notNull().default(true),
+  // batas waktu notifikasi terakhir ditandai dibaca
+  notifDibacaAt: timestamp("notif_dibaca_at"),
   ...timestamps,
 })
 
@@ -273,6 +275,19 @@ export const blacklist = pgTable("blacklist", {
   sanksiId: integer("sanksi_id").references(() => sanksi.id),
   berlakuSd: date("berlaku_sd"),
   aktif: boolean("aktif").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+})
+
+// ---------- File ----------
+
+// pemilik setiap unggahan; dipakai untuk membatasi akses file sebelum file tertaut ke data
+export const unggahan = pgTable("unggahan", {
+  key: varchar("key", { length: 64 }).primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  poldaId: integer("polda_id").references(() => polda.id),
+  terenkripsi: boolean("terenkripsi").notNull().default(true),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 })
 

@@ -3,6 +3,8 @@ import { notFound } from "next/navigation"
 import { ArrowLeft, PencilLine } from "lucide-react"
 import { PageHeader } from "@/components/page-header"
 import { DetailPemohon } from "@/components/pendataan/detail-pemohon"
+import { AksiKta } from "@/components/sanksi/aksi-kta"
+import { catatAudit } from "@/server/audit"
 import { labelProfesi, StatusBadge } from "@/components/pendataan/status-badge"
 import { Button } from "@/components/ui/button"
 import { requireUser } from "@/server/auth"
@@ -15,6 +17,7 @@ export default async function DetailPemohonPage({ params }: { params: Promise<{ 
   if (!Number.isInteger(id)) notFound()
   const d = await detailPengajuan(id, user.poldaId)
   if (!d) notFound()
+  await catatAudit(user.id, "LIHAT_PEMOHON", "pengajuan", id)
 
   return (
     <>
@@ -44,7 +47,11 @@ export default async function DetailPemohonPage({ params }: { params: Promise<{ 
           </>
         }
       />
-      <DetailPemohon d={d} tz={await getZona()} />
+      <DetailPemohon
+        d={d}
+        tz={await getZona()}
+        aksiKta={d.kartu && <AksiKta kartuId={d.kartu.id} status={d.kartu.status} noKta={d.kartu.noKta} />}
+      />
     </>
   )
 }

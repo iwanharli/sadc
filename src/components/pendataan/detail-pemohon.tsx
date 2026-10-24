@@ -3,13 +3,24 @@ import { ChartCard } from "@/components/dashboard/chart-card"
 import { cn } from "@/lib/utils"
 import { formatTanggal, formatWaktu, hariIniDi } from "@/lib/waktu"
 import type { detailPengajuan } from "@/server/pendataan"
-import { labelJenis, labelProfesi } from "./status-badge"
+import { TombolPdf } from "@/components/cetak/tombol-cetak"
+import { labelJenis, labelProfesi, StatusBadge } from "./status-badge"
+
+const LABEL_RIWAYAT: Record<string, string> = {
+  DRAF: "Draf",
+  TERVERIFIKASI: "Terverifikasi",
+  DICETAK: "KTA diterbitkan",
+  KTA_AKTIF: "KTA dipulihkan",
+  KTA_DIBEKUKAN: "KTA dibekukan",
+  KTA_DICABUT: "KTA dicabut",
+  KTA_KEDALUWARSA: "KTA kedaluwarsa",
+}
 
 type Detail = NonNullable<Awaited<ReturnType<typeof detailPengajuan>>>
 
 const file = (key: string) => `/api/files/${key}`
 
-export function DetailPemohon({ d, tz }: { d: Detail; tz: string }) {
+export function DetailPemohon({ d, tz, aksiKta }: { d: Detail; tz: string; aksiKta?: React.ReactNode }) {
   const { pengajuan: p, pemohon } = d
   const hariIni = hariIniDi(tz)
   const tgl = (v?: string | Date | null, jam = false) => (jam && v instanceof Date ? formatWaktu(v, tz) : formatTanggal(v, tz))
@@ -143,10 +154,13 @@ export function DetailPemohon({ d, tz }: { d: Detail; tz: string }) {
                   <IdCard className="size-6 text-primary" />
                   <span className="font-mono text-lg font-semibold">{d.kartu.noKta}</span>
                 </div>
+                <StatusBadge status="DICETAK" kartu={d.kartu.status} besar />
                 <dl className="grid gap-3">
                   <Item label="Terbit" value={tgl(d.kartu.terbitAt)} />
                   <Item label="Berlaku sampai" value={tgl(d.kartu.berlakuSd)} />
                 </dl>
+                <TombolPdf kartuId={d.kartu.id} />
+                {aksiKta && <div className="border-t pt-4">{aksiKta}</div>}
               </div>
             </ChartCard>
           )}
@@ -167,7 +181,7 @@ export function DetailPemohon({ d, tz }: { d: Detail; tz: string }) {
                     <History className="size-4" />
                   </span>
                   <div>
-                    <p className="text-[15px] font-semibold">{r.ke === "TERVERIFIKASI" ? "Terverifikasi" : r.ke === "DICETAK" ? "Dicetak" : "Draf"}</p>
+                    <p className="text-[15px] font-semibold">{LABEL_RIWAYAT[r.ke] ?? r.ke}</p>
                     <p className="text-[15px] text-muted-foreground">{r.catatan}</p>
                     <p className="mt-0.5 text-sm text-muted-foreground">
                       {tgl(r.at, true)} · {r.oleh ?? "Sistem"}

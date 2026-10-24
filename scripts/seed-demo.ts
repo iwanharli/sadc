@@ -133,7 +133,10 @@ async function main() {
           kartuId: kartu.id,
           jenis: statusKartu === "DIBEKUKAN" ? "BEKU" : "CABUT",
           alasan: statusKartu === "DIBEKUKAN" ? "Data tidak sesuai" : "Dokumen palsu",
+          keterangan: "Data demo",
           oleh: operator.id,
+          // waktu sanksi acak setelah kartu terbit (bukan saat seed dijalankan)
+          at: new Date(Math.min(Date.now() - 3_600_000, terbit.getTime() + rand() * (Date.now() - terbit.getTime()))),
         })
       }
     }

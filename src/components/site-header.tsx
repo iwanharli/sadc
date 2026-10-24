@@ -17,7 +17,7 @@ import { adminNav, findCrumb, operatorNav } from "./nav"
 import { ThemeToggle } from "./theme-toggle"
 import { UserMenu } from "./user-menu"
 
-export function SiteHeader({ role, name }: { role: "ADMIN" | "OPERATOR"; name: string }) {
+export function SiteHeader({ role, name, notif = 0 }: { role: "ADMIN" | "OPERATOR"; name: string; notif?: number }) {
   const pathname = usePathname()
   const crumb = findCrumb(role === "ADMIN" ? adminNav : operatorNav, pathname)
   const base = role === "ADMIN" ? "/admin" : "/operator"
@@ -37,9 +37,14 @@ export function SiteHeader({ role, name }: { role: "ADMIN" | "OPERATOR"; name: s
       </Breadcrumb>
 
       <div className="ml-auto flex items-center gap-1">
-        <Button variant="ghost" size="icon" asChild aria-label="Notifikasi">
+        <Button variant="ghost" size="icon" asChild aria-label={`Notifikasi${notif ? ` (${notif} belum dibaca)` : ""}`} className="relative">
           <Link href={`${base}/notifikasi`}>
-            <Bell className="size-4" />
+            <Bell className="size-5" />
+            {notif > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1 text-[11px] font-bold text-white ring-2 ring-background">
+                {notif > 99 ? "99+" : notif}
+              </span>
+            )}
           </Link>
         </Button>
         <ThemeToggle />

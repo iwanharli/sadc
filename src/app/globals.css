@@ -103,6 +103,13 @@
   /* seri grafik (divalidasi: CVD & kontras) */
   --series-satpam: #0d9488;
   --series-dc: #d97706;
+  /* skala sekuensial peta (sedikit → banyak) */
+  --seq-0: #e6edf0;
+  --seq-1: #ccfbf1;
+  --seq-2: #7ee8d6;
+  --seq-3: #2cc4ae;
+  --seq-4: #0f9384;
+  --seq-5: #0b5c55;
 }
 
 .dark {
@@ -147,6 +154,12 @@
   --sidebar-ring: oklch(0.74 0.12 180);
   --series-satpam: #0f9e8e;
   --series-dc: #c98500;
+  --seq-0: #22303a;
+  --seq-1: #12423f;
+  --seq-2: #136860;
+  --seq-3: #179383;
+  --seq-4: #2ec4ad;
+  --seq-5: #8ff0de;
 }
 
 @layer base {
@@ -200,3 +213,13 @@
   box-shadow: none;
 }
 .swal2-container.swal2-backdrop-show { background: oklch(0.1 0.02 235 / 55%); backdrop-filter: blur(2px); }
+
+/* tombol SweetAlert dengan tiga pilihan */
+.sadc-swal .swal-btn-primary,
+.sadc-swal .swal-btn-outline,
+.sadc-swal .swal-btn-ghost {
+  height: 2.5rem; padding: 0 1rem; border-radius: var(--radius-md); font-weight: 500; font-size: 0.95rem;
+}
+.sadc-swal .swal-btn-primary { background: var(--primary); color: var(--primary-foreground); }
+.sadc-swal .swal-btn-outline { border: 1px solid var(--border); background: var(--background); color: var(--foreground); }
+.sadc-swal .swal-btn-ghost { background: transparent; color: var(--muted-foreground); }

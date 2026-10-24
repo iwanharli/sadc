@@ -2,6 +2,7 @@ import Link from "next/link"
 import { ArrowRight, Ban, BadgeCheck, CalendarClock, FilePen, Printer, ShieldAlert } from "lucide-react"
 import { ChartCard } from "@/components/dashboard/chart-card"
 import { PoldaChart, TrenChart } from "@/components/dashboard/charts"
+import { PetaSebaran } from "@/components/dashboard/peta-sebaran"
 import { HeroTotal } from "@/components/dashboard/hero-total"
 import { parsePeriode, PeriodTabs } from "@/components/dashboard/period-tabs"
 import { RecentList } from "@/components/dashboard/recent-list"
@@ -100,6 +101,11 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
           <PoldaChart data={top} />
         </ChartCard>
       </div>
+
+      <SectionLabel title="Peta sebaran" hint="total pendataan per Polda" />
+      <ChartCard title="Sebaran nasional" description="Arahkan kursor ke provinsi untuk melihat rincian Polda">
+        <PetaSebaran rekap={rekap} />
+      </ChartCard>
 
       <SectionLabel title="Aktivitas & rekap" />
       <div className="grid gap-5 xl:grid-cols-5">

@@ -7,7 +7,7 @@ export default async function OperatorLayout({ children }: { children: React.Rea
   const wilayah = await getPoldaNama(user.poldaId)
 
   return (
-    <AppShell role="OPERATOR" user={{ name: user.name, wilayah }}>
+    <AppShell role="OPERATOR" user={{ id: user.id, name: user.name, poldaId: user.poldaId, wilayah }}>
       {children}
     </AppShell>
   )

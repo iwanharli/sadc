@@ -113,6 +113,11 @@ export async function daftarPemohon(f: FilterPemohon) {
         perusahaan: schema.perusahaan.nama,
         polda: schema.polda.nama,
         kartu: schema.kartu.status,
+        kartuId: schema.kartu.id,
+        jenisKelamin: schema.pemohon.jenisKelamin,
+        noHp: schema.pemohon.noHp,
+        noKta: schema.kartu.noKta,
+        dicetakAt: schema.kartu.dicetakAt,
       })
       .from(schema.pengajuan)
       .innerJoin(schema.pemohon, eq(schema.pengajuan.pemohonId, schema.pemohon.id))

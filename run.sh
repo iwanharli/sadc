@@ -71,6 +71,8 @@ ensure_env() {
     secret="$(openssl rand -base64 32 2>/dev/null || head -c 32 /dev/urandom | base64)"
     # isi secret acak & pakai user OS untuk koneksi Postgres lokal
     sed -i.bak "s#^BETTER_AUTH_SECRET=.*#BETTER_AUTH_SECRET=${secret}#" .env
+    # kunci enkripsi file unggahan
+    sed -i.bak "s#^STORAGE_ENC_KEY=.*#STORAGE_ENC_KEY=$(openssl rand -base64 32 2>/dev/null || head -c 32 /dev/urandom | base64)#" .env
     sed -i.bak "s#^DATABASE_URL=.*#DATABASE_URL=postgres://${USER}@localhost:5432/sadc#" .env
     rm -f .env.bak
     c_ok ".env dibuat — periksa DATABASE_URL bila Postgres Anda memakai user/sandi lain"

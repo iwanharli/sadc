@@ -115,12 +115,13 @@ export async function getRekapPerPolda() {
     .select({
       id: polda.id,
       nama: polda.nama,
+      provinsiKode: polda.provinsiKode,
       satpam: sql<number>`count(${pengajuan.id}) filter (where ${pengajuan.profesi} = 'SATPAM')`.mapWith(Number),
       dc: sql<number>`count(${pengajuan.id}) filter (where ${pengajuan.profesi} = 'DEBT_COLLECTOR')`.mapWith(Number),
       total: count(pengajuan.id),
     })
     .from(polda)
     .leftJoin(pengajuan, eq(pengajuan.poldaId, polda.id))
-    .groupBy(polda.id, polda.nama)
+    .groupBy(polda.id, polda.nama, polda.provinsiKode)
     .orderBy(polda.id)
 }

@@ -1,0 +1,1 @@
+ALTER TABLE "user" ADD COLUMN "notif_dibaca_at" timestamp;

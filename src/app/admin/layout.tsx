@@ -5,7 +5,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const user = await requireUser("ADMIN")
 
   return (
-    <AppShell role="ADMIN" user={{ name: user.name }}>
+    <AppShell role="ADMIN" user={{ id: user.id, name: user.name }}>
       {children}
     </AppShell>
   )

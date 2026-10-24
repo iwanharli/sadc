@@ -11,7 +11,7 @@ import type { daftarPemohon } from "@/server/pendataan"
 import { labelProfesi, StatusBadge } from "./status-badge"
 
 type Hasil = Awaited<ReturnType<typeof daftarPemohon>>
-type Params = { q?: string; status?: string; profesi?: string; page?: string }
+type Params = { q?: string; status?: string; profesi?: string; polda?: string; page?: string }
 
 const STATUS = [
   { v: "", t: "Semua" },
@@ -32,12 +32,14 @@ export function DaftarPemohon({
   basePath,
   showPolda,
   tz,
+  filterTambahan,
 }: {
   hasil: Hasil
   params: Params
   basePath: string
   showPolda?: boolean
   tz: string
+  filterTambahan?: React.ReactNode
 }) {
   const href = (ubah: Partial<Params>) => {
     const sp = new URLSearchParams()
@@ -74,9 +76,11 @@ export function DaftarPemohon({
           />
           {params.status && <input type="hidden" name="status" value={params.status} />}
           {params.profesi && <input type="hidden" name="profesi" value={params.profesi} />}
+          {params.polda && <input type="hidden" name="polda" value={params.polda} />}
         </form>
         <Segmen opsi={STATUS} aktif={params.status ?? ""} href={(v) => href({ status: v || undefined })} />
         <Segmen opsi={PROFESI} aktif={params.profesi ?? ""} href={(v) => href({ profesi: v || undefined })} />
+        {filterTambahan}
       </div>
 
       {hasil.rows.length === 0 ? (

@@ -1,6 +1,6 @@
 # Rancangan Website — Sistem Manajemen Database Satpam & Debt Collector (SADC)
 
-> Status: draf awal (umum). Persyaratan dokumen bersifat sementara dan dapat diubah Admin lewat master data.
+> Status: **diimplementasikan** (lihat §13). Persyaratan dokumen bersifat sementara dan dapat diubah Admin lewat menu Persyaratan Dokumen.
 
 ## 1. Ringkasan
 
@@ -21,7 +21,7 @@ Aplikasi dipakai **secara nasional**: satu server pusat (Mabes/Baharkam), diakse
 - **Rekap:** dashboard Admin menampilkan rekap per Polda dan peta sebaran nasional; Operator hanya melihat wilayahnya.
 - **Infrastruktur:** server pusat + backup/DR, akses lewat jaringan VPN Polri, file dokumen di object storage (MinIO) yang dapat diperbesar.
 
-## 2. Stack Teknologi (usulan)
+## 2. Stack Teknologi
 
 | Lapisan | Pilihan |
 |---|---|
@@ -33,7 +33,7 @@ Aplikasi dipakai **secara nasional**: satu server pusat (Mabes/Baharkam), diakse
 | ORM | Drizzle ORM |
 | Auth | Better Auth (self-hosted, session di Postgres) + RBAC |
 | Penyimpanan file | MinIO (S3-compatible), privat + signed URL |
-| Grafik & peta | Recharts + react-simple-maps (GeoJSON provinsi) |
+| Grafik & peta | Recharts + d3-geo (GeoJSON provinsi; react-simple-maps belum mendukung React 19) |
 | PDF | @react-pdf/renderer (kartu CR80 & sertifikat A4) |
 | Export | ExcelJS |
 | QR | qrcode + token bertanda tangan (jose) + URL verifikasi publik |
@@ -149,23 +149,26 @@ Aturan:
   6. Ringkasan + checklist kelengkapan → simpan (otomatis terverifikasi bila lengkap)
 - `/operator/pemohon/[id]` — detail, checklist kekurangan, riwayat status, aksi bekukan/cabut/pulihkan
 - `/operator/sanksi` — daftar KTA dibekukan/dicabut di wilayahnya
-- `/operator/cetak` — antrean cetak (status Terverifikasi), pratinjau KTA & sertifikat
+- `/operator/cetak` — antrean cetak (status Terverifikasi), terbitkan KTA, cetak/cetak ulang KTA & sertifikat (PDF)
+- `/operator/notifikasi` — KTA segera kedaluwarsa, draf terbengkalai, antrean cetak tertunda, sanksi
+- `/operator/profil` — profil, sesi masuk, aktivitas, ganti sandi
 
 ### Admin (`/admin`)
 - `/admin` — dashboard rekapitulasi:
   - KPI: total pemohon, aktif, draf (belum lengkap), menunggu cetak, kedaluwarsa ≤30 hari
-  - Grafik tren pendaftaran per bulan, per profesi
-  - Peta sebaran per Polda/provinsi
-  - Tabel rekap per Polda & kinerja operator (jumlah input/cetak)
-- `/admin/pemohon` — direktori nasional, filter lengkap, export Excel/PDF
+  - Grafik pendataan harian per profesi (periode 7/30/90 hari) & Polda teratas
+  - Peta sebaran per Polda/provinsi (choropleth)
+  - Tabel rekap per Polda
+- `/admin/pemohon` — direktori nasional, filter lengkap (termasuk Polda), ekspor Excel
 - `/admin/pemohon/[id]` — detail + aksi bekukan/cabut/aktifkan (form alasan & bukti)
 - `/admin/sanksi` — daftar KTA dibekukan/dicabut, pembekuan yang melewati batas waktu
 - `/admin/blacklist` — daftar NIK diblokir, cabut blokir
 - `/admin/perusahaan` — master BUJP & perusahaan pembiayaan
 - `/admin/master/dokumen` — atur persyaratan dokumen per profesi
-- `/admin/master/wilayah` — Polda / Polres
-- `/admin/pengguna` — kelola akun operator & admin
+- `/admin/pengguna` — kelola akun operator & admin (tambah, ubah, nonaktifkan, reset sandi)
 - `/admin/audit` — audit log
+- `/admin/notifikasi`, `/admin/profil`
+- *(belum)* `/admin/master/wilayah` — Polda / Polres
 
 ## 7. Model Data (ringkas)
 
@@ -199,12 +202,19 @@ Format nomor (usulan):
 
 ## 8. Keamanan & Data Pribadi
 
-- RBAC + pembatasan data per Polda di level query.
-- Password di-hash (argon2/bcrypt), sesi aman, rate limit login.
-- Enkripsi kolom sensitif (NIK, biometrik) + file disimpan privat (akses via URL bertanda tangan).
-- Audit log untuk setiap lihat/ubah/cetak/ekspor.
-- Halaman verifikasi publik menampilkan data minimal.
-- QR berisi token acak/bertanda tangan, bukan data pribadi.
+Sudah diterapkan:
+- RBAC + pembatasan data per Polda di level query; Admin & Operator dicek ulang di setiap server action.
+- Password di-hash (Better Auth), sesi 8 jam, cookie `httpOnly`/`SameSite=Lax` (`Secure` di produksi HTTPS), rate limit login.
+- **File unggahan dienkripsi AES-256-GCM** di disk (`STORAGE_ENC_KEY`); isi file dicek sesuai formatnya (PDF/JPG/PNG/WEBP, maks 5 MB).
+- **Akses file dibatasi**: Admin; pengunggahnya; atau Operator Polda yang memiliki pengajuan/sanksi terkait (tabel `unggahan`).
+- Audit log untuk lihat data pemohon, ubah, cetak, sanksi, akun, master data, dan ekspor.
+- Halaman verifikasi publik menampilkan data minimal (nama disamarkan, tanpa NIK/alamat) dan dibatasi 30 permintaan/menit per IP.
+- QR berisi token acak 144-bit, bukan data pribadi.
+- Header keamanan: CSP, `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy`, `Permissions-Policy` (kamera hanya origin sendiri), HSTS di produksi.
+
+Belum / catatan:
+- **NIK di database belum dienkripsi per kolom**: NIK dipakai untuk pencarian awalan & keunikan. Opsi berikutnya: enkripsi kolom + *blind index* (HMAC) untuk pencarian persis — konsekuensinya pencarian NIK sebagian tidak lagi bisa. Sementara itu gunakan enkripsi disk/volume database di server.
+- Rate limit verifikasi publik masih di memori (satu instance); bila multi-instance pindahkan ke Redis/Postgres.
 
 ## 9. Integrasi Hardware (tahap lanjut)
 
@@ -228,7 +238,9 @@ Fase awal memakai input berbasis browser:
 
 ## 11. Hal yang Masih Terbuka
 
-- Masa berlaku KTA (Satpam vs Debt Collector)?
+- Masa berlaku KTA resmi (saat ini 2 tahun, diatur `MASA_BERLAKU_KTA_TAHUN`); berbeda antara Satpam & Debt Collector?
+- Struktur Polda terbaru (Papua pemekaran) & cakupan Polda Metro Jaya per kab/kota.
+- Pejabat penanda tangan sertifikat.
 - Desain resmi kartu & sertifikat (logo, tata letak, hologram).
 - Daftar dokumen resmi dari Binmas/Baharkam Polri (mengganti daftar default).
 
@@ -244,3 +256,26 @@ Rencana integrasi ke depan:
 - **Data BUJP (Binmas/Baharkam)** — cek izin operasional BUJP & sertifikat Gada.
 
 Agar mudah ditambahkan nanti, aturan verifikasi otomatis dibuat modular (setiap aturan = satu fungsi pengecekan), sehingga validator eksternal cukup ditambahkan sebagai aturan baru.
+
+## 13. Status Implementasi
+
+| Area | Status |
+|---|---|
+| Login, role Operator/Admin, login cepat akun demo | ✅ |
+| Tampilan (shadcn/ui, tema terang/gelap otomatis, SweetAlert2), zona waktu mengikuti pengguna | ✅ |
+| Kode wilayah Kemendagri (4 level) & GeoJSON provinsi/kab-kota | ✅ |
+| Formulir pendataan 6 langkah, unggah dokumen, kamera, tanda tangan | ✅ |
+| Verifikasi otomatis (8 aturan) & daftar kekurangan | ✅ |
+| Daftar & detail pemohon (Operator) dan direktori nasional + ekspor Excel (Admin) | ✅ |
+| Antrean cetak, nomor KTA, PDF KTA (CR80) & sertifikat (A4), QR | ✅ |
+| Verifikasi QR publik | ✅ |
+| Bekukan / cabut / pulihkan KTA, blacklist otomatis, daftar sanksi | ✅ |
+| Kelola pengguna, master persyaratan dokumen, master perusahaan | ✅ |
+| Dashboard ringkasan, grafik, peta sebaran | ✅ |
+| Notifikasi, profil & ganti sandi, audit log | ✅ |
+| Job terjadwal (pg-boss, tiap jam): KTA kedaluwarsa & blacklist berakhir, per zona waktu Polda | ✅ |
+| Enkripsi file, akses file per Polda, rate limit, header keamanan | ✅ |
+| Enkripsi kolom NIK | ⏳ (lihat §8) |
+| Penyimpanan MinIO, Docker Compose, tes otomatis (Vitest/Playwright) | ⏳ |
+| Integrasi hardware & instansi lain, ABIS | ⏳ ditunda |
+

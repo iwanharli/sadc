@@ -75,11 +75,14 @@ export function findCrumb(groups: NavGroup[], pathname: string) {
   let best: { group: string; label: string; len: number } | null = null
   for (const g of groups) {
     for (const item of g.items) {
-      const match = pathname === item.href || pathname.startsWith(item.href + "/")
+      // menu beranda (/operator, /admin) hanya cocok persis, bukan sebagai awalan
+      const beranda = item.href.split("/").length === 2
+      const match = pathname === item.href || (!beranda && pathname.startsWith(item.href + "/"))
       if (match && (!best || item.href.length > best.len)) {
         best = { group: g.label, label: item.label, len: item.href.length }
       }
     }
   }
+  if (!best && pathname.endsWith("/profil")) return { group: "Akun", label: "Profil saya", len: 0 }
   return best
 }
