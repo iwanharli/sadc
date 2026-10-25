@@ -15,7 +15,8 @@ import {
   type LucideIcon,
 } from "lucide-react"
 
-export type NavItem = { href: string; label: string; icon: LucideIcon }
+export type NavSub = { href: string; label: string }
+export type NavItem = { href: string; label: string; icon: LucideIcon; children?: NavSub[] }
 export type NavGroup = { label: string; items: NavItem[] }
 
 export const operatorNav: NavGroup[] = [
@@ -53,7 +54,15 @@ export const adminNav: NavGroup[] = [
     items: [
       { href: "/admin/satpam", label: "Daftar Satpam", icon: ShieldCheck },
       { href: "/admin/penagih-utang", label: "Daftar Penagih Utang", icon: HandCoins },
-      { href: "/admin/perusahaan", label: "Daftar Perusahaan", icon: Building2 },
+      {
+        href: "/admin/perusahaan",
+        label: "Daftar Perusahaan",
+        icon: Building2,
+        children: [
+          { href: "/admin/perusahaan/bujp", label: "BUJP" },
+          { href: "/admin/perusahaan/pjpu", label: "PJPU" },
+        ],
+      },
       { href: "/admin/laporan", label: "Laporan", icon: FileChartColumn },
     ],
   },
@@ -75,16 +84,19 @@ export const adminNav: NavGroup[] = [
   },
 ]
 
-/** Cari grup & label untuk breadcrumb berdasarkan path. */
+/** Cari grup & label untuk breadcrumb berdasarkan path (submenu: induk › anak). */
 export function findCrumb(groups: NavGroup[], pathname: string) {
   let best: { group: string; label: string; len: number } | null = null
+  const cocok = (href: string) => {
+    // menu beranda (/operator, /admin) hanya cocok persis, bukan sebagai awalan
+    const beranda = href.split("/").length === 2
+    return pathname === href || (!beranda && pathname.startsWith(href + "/"))
+  }
   for (const g of groups) {
     for (const item of g.items) {
-      // menu beranda (/operator, /admin) hanya cocok persis, bukan sebagai awalan
-      const beranda = item.href.split("/").length === 2
-      const match = pathname === item.href || (!beranda && pathname.startsWith(item.href + "/"))
-      if (match && (!best || item.href.length > best.len)) {
-        best = { group: g.label, label: item.label, len: item.href.length }
+      const kandidat = [{ href: item.href, group: g.label, label: item.label }, ...(item.children ?? []).map((c) => ({ href: c.href, group: item.label, label: c.label }))]
+      for (const k of kandidat) {
+        if (cocok(k.href) && (!best || k.href.length > best.len)) best = { group: k.group, label: k.label, len: k.href.length }
       }
     }
   }

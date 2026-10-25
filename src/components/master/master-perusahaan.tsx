@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Building2, Loader2, Pencil, Plus, Search } from "lucide-react"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Controller, useForm } from "react-hook-form"
@@ -36,17 +35,12 @@ export type Perusahaan = {
 }
 type Polda = { id: number; nama: string }
 
-type Params = { q?: string; jenis?: string; polda?: string; per?: string }
+type Params = { q?: string; polda?: string; per?: string }
 
-const BASE = "/admin/perusahaan"
-const JENIS = [
-  ["", "Semua"],
-  ["BUJP", "BUJP"],
-  ["PEMBIAYAAN", "PJPU"],
-] as const
-
-/** Daftar perusahaan: pencarian, filter & paginasi diproses di server lewat query string. */
+/** Daftar perusahaan satu jenis (BUJP / PJPU): pencarian, filter Polda & paginasi diproses di server. */
 export function MasterPerusahaan({
+  jenis,
+  basePath: BASE,
   rows,
   polda,
   total,
@@ -55,6 +49,8 @@ export function MasterPerusahaan({
   perPage,
   params,
 }: {
+  jenis: "BUJP" | "PEMBIAYAAN"
+  basePath: string
   rows: Perusahaan[]
   polda: Polda[]
   total: number
@@ -67,22 +63,15 @@ export function MasterPerusahaan({
   const [form, setForm] = useState<Perusahaan | "baru" | null>(null)
   const tampil = rows
 
-  const href = (ubah: Partial<Params>) => {
-    const sp = new URLSearchParams()
-    for (const [k, v] of Object.entries({ ...params, ...ubah })) if (v) sp.set(k, v)
-    const s = sp.toString()
-    return s ? `${BASE}?${s}` : BASE
-  }
-
   return (
     <Card className="gap-0 overflow-hidden p-0">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b px-6 py-5">
         <div>
-          <h3 className="text-lg font-semibold">Data perusahaan</h3>
+          <h3 className="text-lg font-semibold">Data {jenis === "BUJP" ? "BUJP" : "PJPU"}</h3>
           <p className="text-[15px] text-muted-foreground">{total.toLocaleString("id-ID")} perusahaan ditemukan</p>
         </div>
         <Button className="h-11 px-5 text-[15px]" onClick={() => setForm("baru")}>
-          <Plus className="size-5" /> Tambah perusahaan
+          <Plus className="size-5" /> Tambah {jenis === "BUJP" ? "BUJP" : "PJPU"}
         </Button>
       </div>
 
@@ -90,25 +79,9 @@ export function MasterPerusahaan({
         <form action={BASE} className="relative min-w-64 flex-1">
           <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input name="q" defaultValue={params.q} placeholder="Cari nama atau NIB..." className="h-11 pl-10 text-[15px]" />
-          {params.jenis && <input type="hidden" name="jenis" value={params.jenis} />}
           {params.polda && <input type="hidden" name="polda" value={params.polda} />}
           {params.per && <input type="hidden" name="per" value={params.per} />}
         </form>
-        <div className="inline-flex rounded-xl border bg-background p-1">
-          {JENIS.map(([v, t]) => (
-            <Link
-              key={v}
-              href={href({ jenis: v || undefined })}
-              scroll={false}
-              className={cn(
-                "rounded-lg px-3.5 py-1.5 text-[15px] font-medium transition-colors",
-                (params.jenis ?? "") === v ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {t}
-            </Link>
-          ))}
-        </div>
         <FilterPolda polda={polda} basePath={BASE} />
       </div>
 
@@ -116,7 +89,6 @@ export function MasterPerusahaan({
         <TableHeader>
           <TableRow className="hover:bg-transparent">
             <TableHead className="h-12 pl-6 text-sm font-semibold uppercase tracking-wide">Perusahaan</TableHead>
-            <TableHead className="h-12 text-sm font-semibold uppercase tracking-wide">Jenis</TableHead>
             <TableHead className="h-12 text-sm font-semibold uppercase tracking-wide">Polda</TableHead>
             <TableHead className="h-12 text-right text-sm font-semibold uppercase tracking-wide">Pemohon</TableHead>
             <TableHead className="h-12 pr-6 text-right text-sm font-semibold uppercase tracking-wide">Aksi</TableHead>
@@ -131,11 +103,6 @@ export function MasterPerusahaan({
                   NIB <span className="font-mono">{r.nib ?? "—"}</span>
                   {!r.aktif && " · nonaktif"}
                 </p>
-              </TableCell>
-              <TableCell>
-                <span className={cn("rounded-full px-2.5 py-1 text-sm font-medium", r.jenis === "BUJP" ? "bg-series-satpam/15 text-series-satpam" : "bg-series-dc/15 text-series-dc")}>
-                  {r.jenis === "BUJP" ? "BUJP" : "PJPU"}
-                </span>
               </TableCell>
               <TableCell>{r.polda?.replace(/^Polda /, "") ?? "—"}</TableCell>
               <TableCell className="text-right tabular-nums">{r.pemohon.toLocaleString("id-ID")}</TableCell>
@@ -160,6 +127,7 @@ export function MasterPerusahaan({
         <FormPerusahaan
           key={form === "baru" ? "baru" : form.id}
           awal={form === "baru" ? null : form}
+          jenisAwal={jenis}
           polda={polda}
           onClose={() => setForm(null)}
           onSaved={() => {
@@ -172,12 +140,24 @@ export function MasterPerusahaan({
   )
 }
 
-function FormPerusahaan({ awal, polda, onClose, onSaved }: { awal: Perusahaan | null; polda: Polda[]; onClose: () => void; onSaved: () => void }) {
+function FormPerusahaan({
+  awal,
+  jenisAwal,
+  polda,
+  onClose,
+  onSaved,
+}: {
+  awal: Perusahaan | null
+  jenisAwal: "BUJP" | "PEMBIAYAAN"
+  polda: Polda[]
+  onClose: () => void
+  onSaved: () => void
+}) {
   const f = useForm<PerusahaanInput>({
     resolver: zodResolver(perusahaanSchema),
     defaultValues: awal
       ? { nama: awal.nama, jenis: awal.jenis, nib: awal.nib ?? "", noIzin: awal.noIzin ?? "", alamat: awal.alamat ?? "", poldaId: awal.poldaId ?? undefined, aktif: awal.aktif }
-      : { nama: "", jenis: "BUJP", nib: "", noIzin: "", alamat: "", poldaId: undefined, aktif: true },
+      : { nama: "", jenis: jenisAwal, nib: "", noIzin: "", alamat: "", poldaId: undefined, aktif: true },
   })
   const err = f.formState.errors
 
