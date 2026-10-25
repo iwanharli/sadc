@@ -17,6 +17,7 @@ import {
   Loader2,
   PenLine,
   RefreshCw,
+  TriangleAlert,
   Search,
   ShieldCheck,
   UserRound,
@@ -667,7 +668,7 @@ function Ringkasan({ periksa, onUlang }: { periksa: HasilPeriksa | null; onUlang
       </Alert>
     )
   }
-  const { lolos, hasil, kekurangan } = periksa.data
+  const { lolos, hasil, kekurangan, peringatan } = periksa.data
   return (
     <div className="space-y-6">
       <div
@@ -678,10 +679,14 @@ function Ringkasan({ periksa, onUlang }: { periksa: HasilPeriksa | null; onUlang
       >
         {lolos ? <CircleCheck className="size-8 shrink-0 text-success" /> : <CircleAlert className="size-8 shrink-0 text-warning" />}
         <div>
-          <p className="text-lg font-semibold">{lolos ? "Semua persyaratan terpenuhi" : `${kekurangan.length} kekurangan ditemukan`}</p>
+          <p className="text-lg font-semibold">
+            {lolos ? (peringatan.length ? `Persyaratan terpenuhi, ${peringatan.length} peringatan` : "Semua persyaratan terpenuhi") : `${kekurangan.length} kekurangan ditemukan`}
+          </p>
           <p className="text-[15px] text-muted-foreground">
             {lolos
-              ? "Saat disimpan, pengajuan terverifikasi otomatis dan KTA langsung diterbitkan."
+              ? peringatan.length
+                ? "Peringatan tidak menghalangi penyimpanan, tetapi periksa kembali kecocokannya dengan dokumen asli."
+                : "Saat disimpan, pengajuan terverifikasi otomatis dan KTA langsung diterbitkan."
               : "Data belum bisa disimpan. Kembali ke langkah terkait untuk melengkapinya."}
           </p>
         </div>
@@ -691,11 +696,18 @@ function Ringkasan({ periksa, onUlang }: { periksa: HasilPeriksa | null; onUlang
           <li key={h.kode} className="flex gap-4 px-5 py-4">
             {h.kekurangan.length === 0 ? (
               <CircleCheck className="mt-0.5 size-6 shrink-0 text-success" />
+            ) : h.peringatan ? (
+              <TriangleAlert className="mt-0.5 size-6 shrink-0 text-warning" />
             ) : (
-              <CircleAlert className="mt-0.5 size-6 shrink-0 text-warning" />
+              <CircleAlert className="mt-0.5 size-6 shrink-0 text-destructive" />
             )}
             <div>
-              <p className="text-[16px] font-semibold">{h.nama}</p>
+              <p className="flex flex-wrap items-center gap-2 text-[16px] font-semibold">
+                {h.nama}
+                {h.peringatan && h.kekurangan.length > 0 && (
+                  <span className="rounded-full bg-warning/15 px-2.5 py-0.5 text-sm font-medium text-warning">Peringatan · tidak memblokir</span>
+                )}
+              </p>
               {h.kekurangan.length > 0 && (
                 <ul className="mt-1 list-disc space-y-0.5 pl-5 text-[15px] text-muted-foreground">
                   {h.kekurangan.map((k) => (

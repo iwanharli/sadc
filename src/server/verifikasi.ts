@@ -7,6 +7,7 @@ import { hashNik } from "./nik"
 /**
  * Mesin verifikasi otomatis. Setiap aturan berdiri sendiri dan mengembalikan
  * daftar kekurangan (kosong = lolos). Data hanya disimpan & KTA diterbitkan bila semua aturan lolos.
+ * Aturan bertanda `peringatan` tidak memblokir: temuannya hanya ditampilkan & dicatat untuk ditelusuri.
  * Validator instansi lain (Dukcapil, SKCK online, APPI) nantinya cukup ditambah sebagai aturan baru.
  */
 export type Konteks = {
@@ -16,7 +17,7 @@ export type Konteks = {
   hariIni: string // YYYY-MM-DD menurut zona waktu pengguna
 }
 
-type Aturan = { kode: string; nama: string; cek: (k: Konteks) => Promise<string[]> | string[] }
+type Aturan = { kode: string; nama: string; peringatan?: boolean; cek: (k: Konteks) => Promise<string[]> | string[] }
 
 export async function jenisDokumenUntuk(profesi: PendataanData["profesi"]) {
   return db
@@ -71,11 +72,15 @@ export const ATURAN: Aturan[] = [
   {
     kode: "NIK_WILAYAH",
     nama: "NIK sesuai wilayah alamat KTP",
+    // NIK tidak berubah saat pindah domisili, jadi beda wilayah wajar & tidak memblokir
+    peringatan: true,
     cek: ({ data }) => {
       if (!data.kodeDesa) return []
       // 6 digit awal NIK = kode provinsi + kab/kota + kecamatan
       const kodeKec = data.kodeDesa.split(".").slice(0, 3).join("")
-      return data.nik.startsWith(kodeKec) ? [] : ["6 digit awal NIK tidak sesuai kecamatan pada alamat KTP"]
+      return data.nik.startsWith(kodeKec)
+        ? []
+        : ["6 digit awal NIK berasal dari kecamatan lain (kemungkinan pindah domisili). Pastikan cocok dengan KTP asli."]
     },
   },
   {
@@ -187,13 +192,14 @@ export const ATURAN: Aturan[] = [
   },
 ]
 
-export type HasilAturan = { kode: string; nama: string; kekurangan: string[] }
+export type HasilAturan = { kode: string; nama: string; peringatan: boolean; kekurangan: string[] }
 
 export async function jalankanVerifikasi(k: Konteks) {
   const hasil: HasilAturan[] = []
-  for (const a of ATURAN) hasil.push({ kode: a.kode, nama: a.nama, kekurangan: await a.cek(k) })
-  const kekurangan = hasil.flatMap((h) => h.kekurangan)
-  return { lolos: kekurangan.length === 0, kekurangan, hasil }
+  for (const a of ATURAN) hasil.push({ kode: a.kode, nama: a.nama, peringatan: !!a.peringatan, kekurangan: await a.cek(k) })
+  const kekurangan = hasil.filter((h) => !h.peringatan).flatMap((h) => h.kekurangan)
+  const peringatan = hasil.filter((h) => h.peringatan).flatMap((h) => h.kekurangan)
+  return { lolos: kekurangan.length === 0, kekurangan, peringatan, hasil }
 }
 
 

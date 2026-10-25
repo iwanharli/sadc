@@ -180,7 +180,7 @@ export async function simpanPendataan(
         entitas: "pengajuan",
         entitasId: String(id),
         ip,
-        data: { jenis: data.jenis, noKta: kartu.noKta },
+        data: { jenis: data.jenis, noKta: kartu.noKta, ...(ver.peringatan.length ? { peringatan: ver.peringatan } : {}) },
       })
       return { id, kartuId: kartu.kartuId, noKta: kartu.noKta }
     })
