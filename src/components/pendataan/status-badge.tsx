@@ -39,6 +39,6 @@ export function StatusBadge({
   )
 }
 
-export const labelProfesi = (p: "SATPAM" | "DEBT_COLLECTOR") => (p === "SATPAM" ? "Satpam" : "Debt Collector")
+export const labelProfesi = (p: "SATPAM" | "DEBT_COLLECTOR") => (p === "SATPAM" ? "Satpam" : "Penagih Utang")
 export const labelJenis = (j: "BARU" | "PERPANJANGAN" | "PENGGANTIAN") =>
   ({ BARU: "Baru", PERPANJANGAN: "Perpanjangan", PENGGANTIAN: "Penggantian" })[j]

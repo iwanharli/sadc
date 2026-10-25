@@ -136,7 +136,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
               <TableRow className="hover:bg-transparent">
                 <TableHead className="h-12 pl-6 text-sm font-semibold">Polda</TableHead>
                 <TableHead className="h-12 text-right text-sm font-semibold">Satpam</TableHead>
-                <TableHead className="h-12 text-right text-sm font-semibold">Debt Collector</TableHead>
+                <TableHead className="h-12 text-right text-sm font-semibold">Penagih Utang</TableHead>
                 <TableHead className="h-12 w-[30%] pr-6 text-sm font-semibold">Total</TableHead>
               </TableRow>
             </TableHeader>

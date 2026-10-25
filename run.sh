@@ -21,7 +21,7 @@ c_err()  { printf "\033[31m✗ %s\033[0m\n" "$*" >&2; }
 
 usage() {
   cat <<EOF
-SADC — Sistem Pendataan Satpam & Debt Collector
+SADC — Sistem Pendataan Satpam & Penagih Utang
 
 Pemakaian: ./run.sh [perintah] [--port N]
 

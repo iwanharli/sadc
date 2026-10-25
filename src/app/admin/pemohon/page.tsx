@@ -26,7 +26,7 @@ export default async function DirektoriPage({ searchParams }: { searchParams: Pr
       <PageHeader
         eyebrow="Data"
         title="Direktori Pemohon"
-        description="Seluruh pendataan Satpam & Debt Collector secara nasional"
+        description="Seluruh pendataan Satpam & Penagih Utang secara nasional"
         actions={
           <Button asChild variant="outline" size="lg" className="h-11 px-5 text-[15px]">
             <a href={`/api/export/pemohon${qs.size ? `?${qs}` : ""}`}>

@@ -72,7 +72,7 @@ export function HeroTotal({
           </span>
           <span className="flex items-center gap-2.5">
             <span className="size-3 rounded-full bg-[oklch(0.85_0.14_80)]" />
-            Debt Collector <b className="text-lg tabular-nums">{nf.format(dc)}</b>
+            Penagih Utang <b className="text-lg tabular-nums">{nf.format(dc)}</b>
             <span className="text-hero-foreground/70">({sum ? Math.round((dc / sum) * 100) : 0}%)</span>
           </span>
         </div>

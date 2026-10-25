@@ -81,7 +81,7 @@ export default async function OperatorHome({ searchParams }: { searchParams: Pro
         <EmptyState
           icon={Users}
           title="Belum ada pendataan"
-          description="Mulai mendata Satpam atau Debt Collector yang mengajukan KTA & sertifikat."
+          description="Mulai mendata Satpam atau Penagih Utang yang mengajukan KTA & sertifikat."
           action={
             <Button asChild>
               <Link href="/operator/pemohon/baru">

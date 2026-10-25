@@ -1,10 +1,10 @@
-# Rancangan Website — Sistem Manajemen Database Satpam & Debt Collector (SADC)
+# Rancangan Website — Sistem Manajemen Database Satpam & Penagih Utang (SADC)
 
 > Status: **diimplementasikan** (lihat §13). Persyaratan dokumen bersifat sementara dan dapat diubah Admin lewat menu Persyaratan Dokumen.
 
 ## 1. Ringkasan
 
-Aplikasi web untuk pendataan (enrollment) Satpam dan Debt Collector yang mengajukan **KTA & Sertifikat** dari Polri, dengan rekapitulasi terpusat.
+Aplikasi web untuk pendataan (enrollment) Satpam dan Penagih Utang yang mengajukan **KTA & Sertifikat** dari Polri, dengan rekapitulasi terpusat.
 
 - **Operator** — menginput/mendata pemohon, mengunggah dokumen, merekam foto/sidik jari/tanda tangan, mencetak kartu. Verifikasi berjalan **otomatis** saat semua persyaratan lengkap.
 - **Admin** — melihat rekapitulasi seluruh pendataan, mengelola master data dan akun.
@@ -82,7 +82,7 @@ Pengajuan hanya bisa disimpan (dan KTA diterbitkan) jika semua kondisi berikut t
 3. Semua dokumen **wajib** sesuai profesi & jenis pengajuan sudah diunggah, dengan nomor dokumen terisi.
 4. Dokumen yang memiliki masa berlaku (SKCK, surat sehat, bebas narkoba, SPPI) **belum kedaluwarsa** pada tanggal pengajuan.
 5. Biometrik lengkap: foto wajah, sidik jari, tanda tangan.
-6. Khusus Satpam: jenjang Gada & nomor sertifikat terisi. Khusus Debt Collector: nomor SPPI terisi & masih berlaku.
+6. Khusus Satpam: jenjang Gada & nomor sertifikat terisi. Khusus Penagih Utang: nomor SPPI terisi & masih berlaku.
 
 Jika ada yang belum terpenuhi, data tidak disimpan dan sistem menampilkan checklist kekurangan. Setiap verifikasi otomatis dicatat di `riwayat_status` (oleh: SISTEM) beserta snapshot hasil pengecekan.
 
@@ -126,7 +126,7 @@ Aturan:
 | SK_BUJP | Surat keterangan kerja / penugasan dari BUJP / perusahaan | ✅ |
 | KTA_LAMA | KTA lama (perpanjangan/penggantian) | Kondisional |
 
-### Khusus Debt Collector
+### Khusus Penagih Utang
 | Kode | Dokumen | Wajib |
 |---|---|:-:|
 | SPPI | Sertifikat profesi penagihan (lembaga terdaftar OJK) | ✅ |
@@ -243,7 +243,7 @@ Fase awal memakai input berbasis browser:
 
 ## 11. Hal yang Masih Terbuka
 
-- Masa berlaku KTA resmi (saat ini 2 tahun, diatur `MASA_BERLAKU_KTA_TAHUN`); berbeda antara Satpam & Debt Collector?
+- Masa berlaku KTA resmi (saat ini 2 tahun, diatur `MASA_BERLAKU_KTA_TAHUN`); berbeda antara Satpam & Penagih Utang?
 - Struktur Polda terbaru (Papua pemekaran) & cakupan Polda Metro Jaya per kab/kota.
 - Pejabat penanda tangan sertifikat.
 - Desain resmi kartu & sertifikat (logo, tata letak, hologram).
@@ -256,7 +256,7 @@ Integrasi dengan instansi lain **ditunda** ke tahap pengembangan berikutnya. Pad
 Rencana integrasi ke depan:
 - **Dukcapil** — validasi NIK & biodata.
 - **SKCK online Polri** — cek keabsahan & masa berlaku SKCK.
-- **APPI / lembaga sertifikasi OJK** — cek nomor SPPI Debt Collector.
+- **APPI / lembaga sertifikasi OJK** — cek nomor SPPI Penagih Utang.
 - **OJK** — cek izin perusahaan pembiayaan.
 - **Data BUJP (Binmas/Baharkam)** — cek izin operasional BUJP & sertifikat Gada.
 

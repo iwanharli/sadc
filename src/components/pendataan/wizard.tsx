@@ -160,7 +160,7 @@ export function PendataanWizard({
         return
       }
       const riwayat = hasil.riwayat
-        .map((r) => `<li><b>${r.noRegistrasi}</b> · ${r.profesi === "SATPAM" ? "Satpam" : "Debt Collector"} · ${r.kartu ?? r.status}</li>`)
+        .map((r) => `<li><b>${r.noRegistrasi}</b> · ${r.profesi === "SATPAM" ? "Satpam" : "Penagih Utang"} · ${r.kartu ?? r.status}</li>`)
         .join("")
       const ok = await swal.fire({
         icon: "question",
@@ -282,7 +282,7 @@ export function PendataanWizard({
                       <div className="grid gap-4 sm:grid-cols-2">
                         {[
                           { v: "SATPAM", t: "Satpam", d: "Satuan Pengamanan · KTA & sertifikat Gada", icon: ShieldCheck },
-                          { v: "DEBT_COLLECTOR", t: "Debt Collector", d: "Penagih utang · mitra perusahaan pembiayaan", icon: HandCoins },
+                          { v: "DEBT_COLLECTOR", t: "Penagih Utang", d: "Penagih utang · mitra perusahaan pembiayaan", icon: HandCoins },
                         ].map((o) => (
                           <button
                             key={o.v}

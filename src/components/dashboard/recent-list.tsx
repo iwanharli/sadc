@@ -42,7 +42,7 @@ export function RecentList({ items, showPolda = true }: { items: Item[]; showPol
             <div className="min-w-0 flex-1">
               <p className="truncate text-base font-semibold">{it.nama}</p>
               <p className="truncate text-sm text-muted-foreground">
-                {it.profesi === "SATPAM" ? "Satpam" : "Debt Collector"}
+                {it.profesi === "SATPAM" ? "Satpam" : "Penagih Utang"}
                 {showPolda && <> · {it.polda.replace(/^Polda /, "")}</>}
               </p>
             </div>

@@ -1,4 +1,4 @@
-# SADC — Sistem Pendataan Satpam & Debt Collector
+# SADC — Sistem Pendataan Satpam & Penagih Utang
 
 Rancangan lengkap: [docs/RANCANGAN.md](docs/RANCANGAN.md)
 

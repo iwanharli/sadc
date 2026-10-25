@@ -176,7 +176,7 @@ function FormPerusahaan({ awal, polda, onClose, onSaved }: { awal: Perusahaan | 
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="text-xl">{awal ? "Ubah perusahaan" : "Tambah perusahaan"}</DialogTitle>
-          <DialogDescription className="text-[15px]">BUJP untuk Satpam, perusahaan pembiayaan untuk Debt Collector.</DialogDescription>
+          <DialogDescription className="text-[15px]">BUJP untuk Satpam, perusahaan pembiayaan untuk Penagih Utang.</DialogDescription>
         </DialogHeader>
         <form onSubmit={simpan} className="space-y-4">
           <Field label="Nama perusahaan" galat={err.nama?.message}>

@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "SADC — Pendataan Satpam & Debt Collector",
-  description: "Sistem pendataan KTA & sertifikat Satpam dan Debt Collector",
+  title: "SADC — Pendataan Satpam & Penagih Utang",
+  description: "Sistem pendataan KTA & sertifikat Satpam dan Penagih Utang",
 }
 
 export default function RootLayout({

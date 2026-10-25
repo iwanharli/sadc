@@ -100,7 +100,7 @@ export function PetaSebaran({ rekap }: { rekap: Rekap[] }) {
             {aktif && (
               <dl className="mt-2 space-y-1 text-[15px]">
                 <Baris warna="var(--series-satpam)" label="Satpam" n={aktif.satpam} />
-                <Baris warna="var(--series-dc)" label="Debt Collector" n={aktif.dc} />
+                <Baris warna="var(--series-dc)" label="Penagih Utang" n={aktif.dc} />
                 <div className="flex justify-between border-t pt-1 font-semibold">
                   <span>Total</span>
                   <span className="tabular-nums">{nf.format(aktif.total)}</span>
