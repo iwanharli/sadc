@@ -2,8 +2,9 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Building2, Loader2, Pencil, Plus, Search } from "lucide-react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -15,6 +16,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { perusahaanSchema, type PerusahaanInput } from "@/lib/master-schema"
 import { swal } from "@/lib/swal"
+import { FilterPolda } from "@/components/pendataan/filter-polda"
+import { Paginasi } from "@/components/pendataan/paginasi"
 import { cn } from "@/lib/utils"
 import { simpanPerusahaan } from "@/server/actions/master"
 import { Cek, Field } from "./field"
@@ -32,60 +35,81 @@ export type Perusahaan = {
   pemohon: number
 }
 type Polda = { id: number; nama: string }
-const PER = 50
 
-export function MasterPerusahaan({ rows, polda }: { rows: Perusahaan[]; polda: Polda[] }) {
+type Params = { q?: string; jenis?: string; polda?: string; per?: string }
+
+const BASE = "/admin/perusahaan"
+const JENIS = [
+  ["", "Semua"],
+  ["BUJP", "BUJP"],
+  ["PEMBIAYAAN", "PJPU"],
+] as const
+
+/** Daftar perusahaan: pencarian, filter & paginasi diproses di server lewat query string. */
+export function MasterPerusahaan({
+  rows,
+  polda,
+  total,
+  page,
+  pages,
+  perPage,
+  params,
+}: {
+  rows: Perusahaan[]
+  polda: Polda[]
+  total: number
+  page: number
+  pages: number
+  perPage: number
+  params: Params
+}) {
   const router = useRouter()
-  const [q, setQ] = useState("")
-  const [jenis, setJenis] = useState<"" | "BUJP" | "PEMBIAYAAN">("")
-  const [poldaId, setPoldaId] = useState("semua")
-  const [batas, setBatas] = useState(PER)
   const [form, setForm] = useState<Perusahaan | "baru" | null>(null)
+  const tampil = rows
 
-  const tampil = useMemo(() => {
-    const k = q.trim().toLowerCase()
-    return rows.filter(
-      (r) =>
-        (!jenis || r.jenis === jenis) &&
-        (poldaId === "semua" || String(r.poldaId) === poldaId) &&
-        (!k || r.nama.toLowerCase().includes(k) || r.nib?.toLowerCase().includes(k)),
-    )
-  }, [rows, q, jenis, poldaId])
+  const href = (ubah: Partial<Params>) => {
+    const sp = new URLSearchParams()
+    for (const [k, v] of Object.entries({ ...params, ...ubah })) if (v) sp.set(k, v)
+    const s = sp.toString()
+    return s ? `${BASE}?${s}` : BASE
+  }
 
   return (
     <Card className="gap-0 overflow-hidden p-0">
-      <div className="flex flex-wrap items-center gap-3 border-b px-6 py-4">
-        <div className="relative min-w-64 flex-1">
-          <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input value={q} onChange={(e) => { setQ(e.target.value); setBatas(PER) }} placeholder="Cari nama atau NIB..." className="h-11 pl-10 text-[15px]" />
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b px-6 py-5">
+        <div>
+          <h3 className="text-lg font-semibold">Data perusahaan</h3>
+          <p className="text-[15px] text-muted-foreground">{total.toLocaleString("id-ID")} perusahaan ditemukan</p>
         </div>
-        <div className="inline-flex rounded-xl border bg-background p-1">
-          {[["", "Semua"], ["BUJP", "BUJP"], ["PEMBIAYAAN", "PJPU"]].map(([v, t]) => (
-            <button
-              key={v}
-              onClick={() => { setJenis(v as typeof jenis); setBatas(PER) }}
-              className={cn("rounded-lg px-3.5 py-1.5 text-[15px] font-medium", jenis === v ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground")}
-            >
-              {t}
-            </button>
-          ))}
-        </div>
-        <Select value={poldaId} onValueChange={(v) => { setPoldaId(v); setBatas(PER) }}>
-          <SelectTrigger className="h-11 w-56 text-[15px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent className="max-h-80">
-            <SelectItem value="semua" className="text-[15px]">Semua Polda</SelectItem>
-            {polda.map((p) => (
-              <SelectItem key={p.id} value={String(p.id)} className="text-[15px]">
-                {p.nama.replace(/^Polda /, "")}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
         <Button className="h-11 px-5 text-[15px]" onClick={() => setForm("baru")}>
           <Plus className="size-5" /> Tambah perusahaan
         </Button>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3 border-b px-6 py-4">
+        <form action={BASE} className="relative min-w-64 flex-1">
+          <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input name="q" defaultValue={params.q} placeholder="Cari nama atau NIB..." className="h-11 pl-10 text-[15px]" />
+          {params.jenis && <input type="hidden" name="jenis" value={params.jenis} />}
+          {params.polda && <input type="hidden" name="polda" value={params.polda} />}
+          {params.per && <input type="hidden" name="per" value={params.per} />}
+        </form>
+        <div className="inline-flex rounded-xl border bg-background p-1">
+          {JENIS.map(([v, t]) => (
+            <Link
+              key={v}
+              href={href({ jenis: v || undefined })}
+              scroll={false}
+              className={cn(
+                "rounded-lg px-3.5 py-1.5 text-[15px] font-medium transition-colors",
+                (params.jenis ?? "") === v ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {t}
+            </Link>
+          ))}
+        </div>
+        <FilterPolda polda={polda} basePath={BASE} />
       </div>
 
       <Table className="text-[15px]">
@@ -99,7 +123,7 @@ export function MasterPerusahaan({ rows, polda }: { rows: Perusahaan[]; polda: P
           </TableRow>
         </TableHeader>
         <TableBody>
-          {tampil.slice(0, batas).map((r) => (
+          {tampil.map((r) => (
             <TableRow key={r.id} className={cn(!r.aktif && "opacity-55")}>
               <TableCell className="py-4 pl-6">
                 <p className="font-semibold">{r.nama}</p>
@@ -127,16 +151,10 @@ export function MasterPerusahaan({ rows, polda }: { rows: Perusahaan[]; polda: P
       {tampil.length === 0 && (
         <div className="flex flex-col items-center gap-2 py-12 text-muted-foreground">
           <Building2 className="size-8" />
-          <p className="text-[15px]">Tidak ada perusahaan.</p>
+          <p className="text-[15px]">Tidak ada perusahaan yang cocok.</p>
         </div>
       )}
-      {tampil.length > batas && (
-        <div className="border-t px-6 py-4 text-center">
-          <Button variant="outline" onClick={() => setBatas((b) => b + PER)}>
-            Tampilkan lagi ({(tampil.length - batas).toLocaleString("id-ID")} tersisa)
-          </Button>
-        </div>
-      )}
+      {total > 0 && <Paginasi page={page} pages={pages} total={total} perPage={perPage} basePath={BASE} query={params} />}
 
       {form && (
         <FormPerusahaan

@@ -2,7 +2,7 @@ import Link from "next/link"
 import { FileSpreadsheet, UserPlus } from "lucide-react"
 import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
-import { DAFTAR_PROFESI, parseFilter, type FilterParams, type SlugProfesi } from "@/lib/filter-pemohon"
+import { DAFTAR_PROFESI, parseFilter, parsePerHalaman, type FilterParams, type SlugProfesi } from "@/lib/filter-pemohon"
 import { requireUser } from "@/server/auth"
 import { db, schema } from "@/server/db"
 import { daftarPemohon } from "@/server/pendataan"
@@ -17,7 +17,7 @@ export async function HalamanDaftar({ role, slug, sp }: { role: "OPERATOR" | "AD
   const info = DAFTAR_PROFESI[slug]
   const admin = role === "ADMIN"
   const f = parseFilter(sp)
-  const perPage = [10, 20, 50, 100].includes(Number(sp.per)) ? Number(sp.per) : 20
+  const perPage = parsePerHalaman(sp.per)
   const basePath = `/${admin ? "admin" : "operator"}/${slug}`
   const [hasil, wilayah, polda, tz] = await Promise.all([
     daftarPemohon({ ...f, profesi: info.profesi, poldaId: admin ? f.poldaId : user.poldaId, page: Number(sp.page) || 1, perPage }),

@@ -20,3 +20,7 @@ export const DAFTAR_PROFESI = {
 } as const
 export type SlugProfesi = keyof typeof DAFTAR_PROFESI
 export const slugProfesi = (p: "SATPAM" | "DEBT_COLLECTOR"): SlugProfesi => (p === "SATPAM" ? "satpam" : "penagih-utang")
+
+/** Pilihan baris per halaman pada tabel berpaginasi (default 20). */
+export const PILIHAN_PER_HALAMAN = [10, 20, 50, 100] as const
+export const parsePerHalaman = (v?: string) => ((PILIHAN_PER_HALAMAN as readonly number[]).includes(Number(v)) ? Number(v) : 20)

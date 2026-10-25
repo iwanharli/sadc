@@ -165,7 +165,7 @@ Aturan:
 - `/admin/pemohon/[id]` — detail + aksi bekukan/cabut/aktifkan (form alasan & bukti)
 - `/admin/sanksi` — daftar KTA dibekukan/dicabut, pembekuan yang melewati batas waktu
 - `/admin/blacklist` — daftar NIK diblokir, cabut blokir
-- `/admin/perusahaan` — master BUJP & PJPU
+- `/admin/perusahaan` — Daftar Perusahaan (BUJP & PJPU): cari, filter jenis & Polda, paginasi
 - `/admin/master/dokumen` — atur persyaratan dokumen per profesi
 - `/admin/pengguna` — kelola akun operator & admin (tambah, ubah, nonaktifkan, reset sandi)
 - `/admin/audit` — audit log

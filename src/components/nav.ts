@@ -53,7 +53,7 @@ export const adminNav: NavGroup[] = [
     items: [
       { href: "/admin/satpam", label: "Daftar Satpam", icon: ShieldCheck },
       { href: "/admin/penagih-utang", label: "Daftar Penagih Utang", icon: HandCoins },
-      { href: "/admin/perusahaan", label: "Perusahaan", icon: Building2 },
+      { href: "/admin/perusahaan", label: "Daftar Perusahaan", icon: Building2 },
       { href: "/admin/laporan", label: "Laporan", icon: FileChartColumn },
     ],
   },

@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem } from "@/components/ui/pagination"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { PILIHAN_PER_HALAMAN } from "@/lib/filter-pemohon"
 import { cn } from "@/lib/utils"
 
-export const PILIHAN_PER_HALAMAN = [10, 20, 50, 100] as const
 const nf = new Intl.NumberFormat("id-ID")
 
 /** Nomor halaman yang ditampilkan: awal, akhir, dan sekitar halaman aktif; celah diganti "…". */
