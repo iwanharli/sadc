@@ -257,6 +257,7 @@ export const kartu = pgTable("kartu", {
   status: statusKartuEnum("status").notNull().default("AKTIF"),
   dicetakBy: text("dicetak_by").references(() => user.id),
   dicetakAt: timestamp("dicetak_at"),
+  updatedAt: timestamp("updated_at").notNull().defaultNow().$onUpdate(() => new Date()),
 }, (t) => [index("kartu_status_berlaku_idx").on(t.status, t.berlakuSd)])
 
 // ---------- Sanksi ----------
@@ -275,6 +276,7 @@ export const sanksi = pgTable("sanksi", {
     .notNull()
     .references(() => user.id),
   at: timestamp("at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow().$onUpdate(() => new Date()),
 })
 
 export const blacklist = pgTable("blacklist", {
@@ -287,7 +289,26 @@ export const blacklist = pgTable("blacklist", {
   berlakuSd: date("berlaku_sd"),
   aktif: boolean("aktif").notNull().default(true),
   createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow().$onUpdate(() => new Date()),
 }, (t) => [index("blacklist_nik_hash_idx").on(t.nikHash)])
+
+// ---------- Integrasi (klien baca-saja, mis. Baharkam Command Center) ----------
+
+export const integrasiToken = pgTable("integrasi_token", {
+  id: serial("id").primaryKey(),
+  nama: text("nama").notNull(),
+  // token hanya disimpan sebagai SHA-256; awalan ditampilkan agar token bisa dikenali
+  tokenHash: varchar("token_hash", { length: 64 }).notNull().unique(),
+  awalan: varchar("awalan", { length: 16 }).notNull(),
+  // kosong = semua IP diizinkan
+  ipIzin: text("ip_izin").array().notNull().default([]),
+  aktif: boolean("aktif").notNull().default(true),
+  dibuatOleh: text("dibuat_oleh").references(() => user.id),
+  terakhirDipakai: timestamp("terakhir_dipakai"),
+  ipTerakhir: text("ip_terakhir"),
+  dicabutAt: timestamp("dicabut_at"),
+  ...timestamps,
+})
 
 // ---------- File ----------
 

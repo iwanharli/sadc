@@ -7,7 +7,7 @@ import { db } from "./db"
  */
 export async function prosesKedaluwarsa() {
   const kartu = await db.execute<{ id: number; pengajuan_id: number; no_kta: string }>(sql`
-    update kartu k set status = 'KEDALUWARSA'
+    update kartu k set status = 'KEDALUWARSA', updated_at = now()
       from pengajuan g join polda p on p.id = g.polda_id
      where g.id = k.pengajuan_id
        and k.status = 'AKTIF'
@@ -22,7 +22,7 @@ export async function prosesKedaluwarsa() {
   }
 
   const blacklist = await db.execute(sql`
-    update blacklist set aktif = false
+    update blacklist set aktif = false, updated_at = now()
      where aktif and berlaku_sd is not null
        and berlaku_sd < (now() at time zone 'Asia/Jakarta')::date`)
 

@@ -19,6 +19,9 @@ export type AksiAudit =
   | "EKSPOR_PEMOHON"
   | "UBAH_MASTER"
   | "GANTI_SANDI"
+  | "API_INTEGRASI"
+  | "BUAT_TOKEN_INTEGRASI"
+  | "CABUT_TOKEN_INTEGRASI"
 
 /** Catat jejak akses/perubahan data pribadi (UU PDP). Tidak pernah menggagalkan aksi utama. */
 export async function catatAudit(

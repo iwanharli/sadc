@@ -284,6 +284,7 @@ Agar mudah ditambahkan nanti, aturan verifikasi otomatis dibuat modular (setiap 
 | Perpanjangan / penggantian langsung dari KTA lama | ✅ |
 | Master Polda & Polres (provinsi cakupan, zona waktu, kab/kota Polres) | ✅ |
 | Laporan: rekap perusahaan, kinerja operator, unduh PDF | ✅ |
+| API integrasi baca-saja `/api/integration/*` (token Admin, IP diizinkan, rate limit, audit) untuk Baharkam Command Center | ✅ |
 | Penyimpanan MinIO, Docker Compose, tes otomatis (Vitest/Playwright) | ⏳ |
 | Integrasi hardware & instansi lain, ABIS | ⏳ ditunda |
 
