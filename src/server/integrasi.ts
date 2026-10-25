@@ -28,10 +28,13 @@ export function galat(status: number, code: string, message: string, headers?: H
   return Response.json({ error: { code, message } }, { status, headers })
 }
 
-/** IP asli klien: Cloudflare → X-Forwarded-For → X-Real-IP. */
+/**
+ * IP asli klien. Di produksi nginx sudah memverifikasi CF-Connecting-IP (hanya dari rentang IP Cloudflare)
+ * dan menuliskannya ke X-Real-IP; header CF-Connecting-IP mentah dari klien tidak dipercaya.
+ */
 export function ipKlien(req: Request) {
   const h = req.headers
-  const ip = h.get("cf-connecting-ip") || h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || ""
+  const ip = h.get("x-real-ip") || h.get("x-forwarded-for")?.split(",")[0]?.trim() || ""
   return ip.replace(/^::ffff:/i, "")
 }
 
