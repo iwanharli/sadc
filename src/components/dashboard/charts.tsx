@@ -19,9 +19,9 @@ const fmtTgl = (v: string, opts: Intl.DateTimeFormatOptions) =>
   new Intl.DateTimeFormat("id-ID", { ...opts, timeZone: "UTC" }).format(new Date(v + "T00:00:00Z"))
 
 /** Pendataan harian per profesi — batang bertumpuk. */
-export function TrenChart({ data }: { data: { tgl: string; satpam: number; dc: number }[] }) {
+export function TrenChart({ data, isi }: { data: { tgl: string; satpam: number; dc: number }[]; isi?: boolean }) {
   return (
-    <ChartContainer config={config} className="aspect-auto h-[320px] w-full">
+    <ChartContainer config={config} className={isi ? "aspect-auto h-[320px] w-full fit:h-full" : "aspect-auto h-[320px] w-full"}>
       <BarChart data={data} margin={{ left: -12, right: 4, top: 8 }} barCategoryGap="18%">
         <CartesianGrid vertical={false} strokeDasharray="3 3" />
         <XAxis

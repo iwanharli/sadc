@@ -6,7 +6,7 @@ import { HeroTotal } from "@/components/dashboard/hero-total"
 import { parsePeriode, PeriodTabs } from "@/components/dashboard/period-tabs"
 import { RecentList } from "@/components/dashboard/recent-list"
 import { EmptyState } from "@/components/empty-state"
-import { PageHeader, SectionLabel } from "@/components/page-header"
+import { PageHeader } from "@/components/page-header"
 import { StatCard } from "@/components/stat-card"
 import { Button } from "@/components/ui/button"
 import { requireUser } from "@/server/auth"
@@ -21,15 +21,17 @@ export default async function OperatorHome({ searchParams }: { searchParams: Pro
     getRingkasan(user.poldaId),
     getPoldaNama(user.poldaId),
     getTren(periode, user.poldaId, tz),
-    getPendataanTerbaru(6, user.poldaId),
+    getPendataanTerbaru(12, user.poldaId),
   ])
 
   const satpamPeriode = tren.data.reduce((a, d) => a + d.satpam, 0)
   const dcPeriode = tren.data.reduce((a, d) => a + d.dc, 0)
 
   return (
-    <>
+    // desktop tinggi: dipaskan satu layar (tinggi layar − header 4rem − padding 3rem); selain itu tersusun & bisa digulir
+    <div className="flex flex-col gap-5 fit:h-[calc(100svh-7rem)]">
       <PageHeader
+        ringkas
         title={`Halo, ${user.name.split(" ").slice(-2).join(" ")}`}
         description={`Ringkasan pendataan di ${wilayah ?? "wilayah Anda"}`}
         actions={
@@ -44,73 +46,49 @@ export default async function OperatorHome({ searchParams }: { searchParams: Pro
         }
       />
 
-      <div className="grid gap-5 xl:grid-cols-3">
-        <div className="xl:col-span-2">
-          <HeroTotal
-            periode={periode}
-            total={tren.total}
-            perubahan={tren.perubahan}
-            rataHarian={tren.rataHarian}
-            satpam={satpamPeriode}
-            dc={dcPeriode}
-          />
+      <div className="grid gap-5 xl:grid-cols-12 fit:min-h-0 fit:flex-1 fit:grid-rows-[minmax(0,5fr)_minmax(0,6fr)]">
+        {/* Baris atas: hero + 4 KPI */}
+        <div className="xl:col-span-5">
+          <HeroTotal ringkas periode={periode} total={tren.total} perubahan={tren.perubahan} rataHarian={tren.rataHarian} satpam={satpamPeriode} dc={dcPeriode} />
         </div>
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-1">
-          <StatCard label="KTA aktif" description="Kartu berlaku di wilayah Anda" value={r.aktif} icon={BadgeCheck} tone="success" />
-          <StatCard
-            label="KTA diterbitkan"
-            description="Total KTA terbit di wilayah Anda"
-            value={r.terbit}
-            hint="lihat daftar Satpam"
-            icon={Printer}
-            tone="info"
-            href="/operator/satpam"
-          />
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:col-span-7 fit:grid-rows-2">
+          <StatCard ringkas label="KTA aktif" description="Berlaku di wilayah Anda" value={r.aktif} icon={BadgeCheck} tone="success" />
+          <StatCard ringkas label="KTA diterbitkan" description="Total terbit di wilayah Anda" value={r.terbit} icon={Printer} tone="info" href="/operator/satpam" />
+          <StatCard ringkas label="KTA dibekukan" description="Nonaktif sementara" value={r.dibekukan} icon={ShieldAlert} tone="danger" href="/operator/sanksi" />
+          <StatCard ringkas label="KTA dicabut" description="Nonaktif permanen" value={r.dicabut} icon={Ban} tone="danger" href="/operator/sanksi" />
         </div>
-      </div>
 
-      <SectionLabel title="Perlu perhatian" />
-      <div className="grid gap-5 sm:grid-cols-2">
-        <StatCard label="KTA dibekukan" description="Nonaktif sementara di wilayah Anda" value={r.dibekukan} hint="tinjau & tindak lanjuti" icon={ShieldAlert} tone="danger" href="/operator/sanksi" />
-        <StatCard label="KTA dicabut" description="Nonaktif permanen di wilayah Anda" value={r.dicabut} hint="lihat daftar & alasan" icon={Ban} tone="danger" href="/operator/sanksi" />
-      </div>
-
-      <SectionLabel title="Aktivitas" hint={`${periode} hari terakhir`} />
-      {r.total === 0 ? (
-        <EmptyState
-          icon={Users}
-          title="Belum ada pendataan"
-          description="Mulai mendata Satpam atau Penagih Utang yang mengajukan KTA & sertifikat."
+        {/* Baris bawah: tren + pendataan terbaru */}
+        <ChartCard
+          className="xl:col-span-8 fit:h-full"
+          title="Pendataan harian"
+          description={`Pemohon yang didata per hari, per profesi · ${periode} hari`}
+          bodyClassName="pt-4 pb-3"
+        >
+          <TrenChart data={tren.data} isi />
+        </ChartCard>
+        <ChartCard
+          className="xl:col-span-4 fit:h-full"
+          title="Pendataan terbaru"
+          description="Di wilayah Anda"
+          bodyClassName="overflow-y-auto p-0"
           action={
-            <Button asChild>
-              <Link href="/operator/pemohon/baru">
-                <UserPlus className="size-4" /> Pendataan Baru
+            <Button variant="ghost" asChild className="h-9">
+              <Link href="/operator/satpam">
+                Semua <ArrowRight className="size-4" />
               </Link>
             </Button>
           }
-        />
-      ) : (
-        <div className="grid gap-5 xl:grid-cols-5">
-          <ChartCard className="xl:col-span-3" title="Pendataan harian" description="Pemohon yang didata per hari, per profesi">
-            <TrenChart data={tren.data} />
-          </ChartCard>
-          <ChartCard
-            className="xl:col-span-2"
-            title="Pendataan terbaru"
-            description="Di wilayah Anda"
-            bodyClassName="p-0"
-            action={
-              <Button variant="ghost" asChild>
-                <Link href="/operator/satpam">
-                  Semua <ArrowRight className="size-4" />
-                </Link>
-              </Button>
-            }
-          >
+        >
+          {r.total === 0 ? (
+            <div className="p-5">
+              <EmptyState icon={Users} title="Belum ada pendataan" description="Mulai mendata Satpam atau Penagih Utang." />
+            </div>
+          ) : (
             <RecentList items={terbaru} showPolda={false} />
-          </ChartCard>
-        </div>
-      )}
-    </>
+          )}
+        </ChartCard>
+      </div>
+    </div>
   )
 }

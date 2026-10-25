@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 
 export function PageHeader({
@@ -5,22 +6,25 @@ export function PageHeader({
   description,
   eyebrow,
   actions,
+  ringkas,
 }: {
   title: string
   description?: React.ReactNode
   eyebrow?: string
   actions?: React.ReactNode
+  /** tanpa margin bawah, judul lebih kecil (dashboard satu layar) */
+  ringkas?: boolean
 }) {
   return (
-    <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+    <div className={cn("flex flex-wrap items-end justify-between gap-4", ringkas ? "shrink-0" : "mb-8")}>
       <div className="space-y-1.5">
         {eyebrow && (
           <Badge variant="secondary" className="mb-1 bg-accent text-accent-foreground">
             {eyebrow}
           </Badge>
         )}
-        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">{title}</h1>
-        {description && <div className="text-lg text-muted-foreground">{description}</div>}
+        <h1 className={cn("font-bold tracking-tight", ringkas ? "text-3xl" : "text-3xl md:text-4xl")}>{title}</h1>
+        {description && <div className={cn("text-muted-foreground", ringkas ? "text-base" : "text-lg")}>{description}</div>}
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
     </div>

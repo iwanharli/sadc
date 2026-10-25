@@ -30,7 +30,7 @@ let cache: Promise<Geo> | null = null
 const muatGeo = () => (cache ??= fetch("/geo/provinsi.geojson").then((r) => r.json()).then(rapikan))
 
 /** Peta choropleth jumlah pendataan per Polda (provinsi diwarnai menurut Polda yang mencakupnya). */
-export function PetaSebaran({ rekap }: { rekap: Rekap[] }) {
+export function PetaSebaran({ rekap, isi }: { rekap: Rekap[]; isi?: boolean }) {
   const [geo, setGeo] = useState<Geo | null>(null)
   const [hover, setHover] = useState<{ p: Prop; x: number; y: number } | null>(null)
 
@@ -61,14 +61,20 @@ export function PetaSebaran({ rekap }: { rekap: Rekap[] }) {
   const rentang = [0, ...batas]
 
   return (
-    <div className="relative">
-      <div className="relative w-full" onMouseLeave={() => setHover(null)}>
+    <div className={cn("relative", isi && "fit:flex fit:h-full fit:flex-col")}>
+      <div className={cn("relative w-full", isi && "fit:min-h-0 fit:flex-1")} onMouseLeave={() => setHover(null)}>
         {!geo || !path ? (
           <div className="flex aspect-[1000/380] items-center justify-center rounded-xl bg-muted/50 text-[15px] text-muted-foreground">
             Memuat peta...
           </div>
         ) : (
-          <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" role="img" aria-label="Peta sebaran pendataan per Polda">
+          <svg
+            viewBox={`0 0 ${W} ${H}`}
+            preserveAspectRatio="xMidYMid meet"
+            className={cn("h-auto w-full", isi && "fit:h-full")}
+            role="img"
+            aria-label="Peta sebaran pendataan per Polda"
+          >
             {geo.features.map((f: Feature<Geometry, Prop>) => {
               const r = perProv.get(f.properties.kode)
               const sama = aktif && r && aktif.id === r.id
@@ -112,7 +118,7 @@ export function PetaSebaran({ rekap }: { rekap: Rekap[] }) {
       </div>
 
       {/* legenda */}
-      <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
+      <div className="mt-3 flex shrink-0 flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
         <span className="font-medium text-foreground">Jumlah pendataan</span>
         <span className="flex items-center gap-2">
           <span className="size-3.5 rounded-sm" style={{ background: "var(--seq-0)" }} /> 0
