@@ -137,7 +137,7 @@ case "$CMD" in
     do_setup
     c_info "Menjalankan development di http://localhost:${PORT}"
     [[ "${DEMO_LOGIN:-}" == "true" ]] && c_info "Login demo aktif — sandi: ${DEMO_PASSWORD:-SadcDemo2026}"
-    exec npx next dev -p "$PORT"
+    exec npx next dev --turbopack -p "$PORT"
     ;;
   setup)   do_setup ;;
   build)   ensure_deps; ensure_env; npm run build ;;
