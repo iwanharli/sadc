@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ArrowRight, BadgeCheck, CalendarClock, Printer, ShieldAlert, TimerOff, UserPlus, Users } from "lucide-react"
+import { ArrowRight, Ban, BadgeCheck, Printer, ShieldAlert, UserPlus, Users } from "lucide-react"
 import { ChartCard } from "@/components/dashboard/chart-card"
 import { TrenChart } from "@/components/dashboard/charts"
 import { HeroTotal } from "@/components/dashboard/hero-total"
@@ -70,10 +70,9 @@ export default async function OperatorHome({ searchParams }: { searchParams: Pro
       </div>
 
       <SectionLabel title="Perlu perhatian" />
-      <div className="grid gap-5 sm:grid-cols-3">
-        <StatCard label="Sudah kedaluwarsa" description="Ajukan perpanjangan" value={r.kedaluwarsa} icon={TimerOff} tone="warning" href="/operator/satpam?status=KEDALUWARSA" />
-        <StatCard label="Segera kedaluwarsa" description="Berakhir ≤ 30 hari lagi" value={r.segeraKedaluwarsa} icon={CalendarClock} tone="warning" />
-        <StatCard label="Dibekukan / dicabut" description="KTA di wilayah Anda" value={r.dibekukan + r.dicabut} icon={ShieldAlert} tone="danger" href="/operator/sanksi" />
+      <div className="grid gap-5 sm:grid-cols-2">
+        <StatCard label="KTA dibekukan" description="Nonaktif sementara di wilayah Anda" value={r.dibekukan} hint="tinjau & tindak lanjuti" icon={ShieldAlert} tone="danger" href="/operator/sanksi" />
+        <StatCard label="KTA dicabut" description="Nonaktif permanen di wilayah Anda" value={r.dicabut} hint="lihat daftar & alasan" icon={Ban} tone="danger" href="/operator/sanksi" />
       </div>
 
       <SectionLabel title="Aktivitas" hint={`${periode} hari terakhir`} />

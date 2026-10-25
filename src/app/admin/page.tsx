@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ArrowRight, Ban, BadgeCheck, CalendarClock, Printer, ShieldAlert, TimerOff } from "lucide-react"
+import { ArrowRight, Ban, BadgeCheck, Printer, ShieldAlert } from "lucide-react"
 import { ChartCard } from "@/components/dashboard/chart-card"
 import { PoldaChart, TrenChart } from "@/components/dashboard/charts"
 import { PetaSebaran } from "@/components/dashboard/peta-sebaran"
@@ -76,9 +76,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
       </div>
 
       <SectionLabel title="Perlu perhatian" hint="pantau dan tindak lanjuti" />
-      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Sudah kedaluwarsa" description="Perlu perpanjangan" value={r.kedaluwarsa} hint="lihat di direktori" icon={TimerOff} tone="warning" href="/admin/satpam?status=KEDALUWARSA" />
-        <StatCard label="Segera kedaluwarsa" description="Berakhir ≤ 30 hari lagi" value={r.segeraKedaluwarsa} hint="ingatkan perpanjangan" icon={CalendarClock} tone="warning" />
+      <div className="grid gap-5 sm:grid-cols-2">
         <StatCard label="KTA dibekukan" description="Nonaktif sementara" value={r.dibekukan} hint="perlu tindak lanjut" icon={ShieldAlert} tone="danger" href="/admin/sanksi" />
         <StatCard label="KTA dicabut" description="Nonaktif permanen" value={r.dicabut} hint="lihat daftar & alasan" icon={Ban} tone="danger" href="/admin/sanksi" />
       </div>
