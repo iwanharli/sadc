@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Geist_Mono, Plus_Jakarta_Sans } from "next/font/google"
+import NextTopLoader from "nextjs-toploader"
 import { ThemeProvider } from "@/components/theme-provider"
 import { TimezoneSync } from "@/components/timezone-sync"
 import { Toaster } from "@/components/ui/sonner"
@@ -29,6 +30,8 @@ export default function RootLayout({
   return (
     <html lang="id" className={`${jakarta.variable} ${geistMono.variable}`} suppressHydrationWarning>
       <body className="antialiased">
+        {/* bilah progres di atas layar setiap kali berpindah halaman */}
+        <NextTopLoader color="var(--primary)" height={3} showSpinner={false} shadow="0 0 10px var(--primary)" crawlSpeed={150} />
         <ThemeProvider>
           <TooltipProvider delayDuration={0}>{children}</TooltipProvider>
           <Toaster richColors position="top-right" />
