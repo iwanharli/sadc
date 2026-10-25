@@ -12,3 +12,11 @@ export function parseFilter(sp: FilterParams) {
     poldaId: Number(sp.polda) || undefined,
   }
 }
+
+/** Halaman daftar per profesi: slug URL ↔ kode profesi. */
+export const DAFTAR_PROFESI = {
+  satpam: { profesi: "SATPAM", judul: "Daftar Satpam", label: "Satpam" },
+  "penagih-utang": { profesi: "DEBT_COLLECTOR", judul: "Daftar Penagih Utang", label: "Penagih Utang" },
+} as const
+export type SlugProfesi = keyof typeof DAFTAR_PROFESI
+export const slugProfesi = (p: "SATPAM" | "DEBT_COLLECTOR"): SlugProfesi => (p === "SATPAM" ? "satpam" : "penagih-utang")

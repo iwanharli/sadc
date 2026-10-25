@@ -142,7 +142,7 @@ Aturan:
 
 ### Operator (`/operator`)
 - `/operator` — beranda: ringkasan pendataan wilayah, daftar Draf yang belum lengkap & antrean cetak
-- `/operator/pemohon` — daftar pemohon (filter status, profesi, cari NIK/nama)
+- `/operator/satpam`, `/operator/penagih-utang` — daftar per profesi (filter status KTA, cari nama / no. registrasi / NIK)
 - `/operator/pemohon/baru` — wizard pendataan:
   1. Pilih profesi & jenis pengajuan (cek NIK duplikat)
   2. Biodata
@@ -161,7 +161,7 @@ Aturan:
   - Grafik pendataan harian per profesi (periode 7/30/90 hari) & Polda teratas
   - Peta sebaran per Polda/provinsi (choropleth)
   - Tabel rekap per Polda
-- `/admin/pemohon` — direktori nasional, filter lengkap (termasuk Polda), ekspor Excel
+- `/admin/satpam`, `/admin/penagih-utang` — daftar nasional per profesi, filter status KTA & Polda, ekspor Excel
 - `/admin/pemohon/[id]` — detail + aksi bekukan/cabut/aktifkan (form alasan & bukti)
 - `/admin/sanksi` — daftar KTA dibekukan/dicabut, pembekuan yang melewati batas waktu
 - `/admin/blacklist` — daftar NIK diblokir, cabut blokir

@@ -186,7 +186,8 @@ export async function simpanPendataan(
     })
 
     revalidatePath("/operator")
-    revalidatePath("/operator/pemohon")
+    revalidatePath("/operator/satpam")
+    revalidatePath("/operator/penagih-utang")
     return { ok: true, data: hasil }
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Gagal menyimpan"

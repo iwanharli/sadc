@@ -6,6 +6,7 @@ import { DetailPemohon } from "@/components/pendataan/detail-pemohon"
 import { labelProfesi, StatusBadge } from "@/components/pendataan/status-badge"
 import { AksiKta } from "@/components/sanksi/aksi-kta"
 import { Button } from "@/components/ui/button"
+import { slugProfesi } from "@/lib/filter-pemohon"
 import { catatAudit } from "@/server/audit"
 import { requireUser } from "@/server/auth"
 import { detailPengajuan } from "@/server/pendataan"
@@ -32,8 +33,8 @@ export default async function DetailAdminPage({ params }: { params: Promise<{ id
         }
         actions={
           <Button variant="outline" size="lg" asChild className="h-11 text-[15px]">
-            <Link href="/admin/pemohon">
-              <ArrowLeft className="size-4" /> Direktori
+            <Link href={`/admin/${slugProfesi(d.pengajuan.profesi)}`}>
+              <ArrowLeft className="size-4" /> Daftar
             </Link>
           </Button>
         }

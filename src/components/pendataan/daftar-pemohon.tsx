@@ -34,6 +34,9 @@ export function DaftarPemohon({
   showPolda,
   tz,
   filterTambahan,
+  detailBase = basePath,
+  profesiTetap,
+  judul,
 }: {
   hasil: Hasil
   params: Params
@@ -41,6 +44,11 @@ export function DaftarPemohon({
   showPolda?: boolean
   tz: string
   filterTambahan?: React.ReactNode
+  /** awalan URL halaman detail (default = basePath) */
+  detailBase?: string
+  /** sembunyikan filter profesi (halaman sudah khusus satu profesi) */
+  profesiTetap?: boolean
+  judul?: string
 }) {
   const href = (ubah: Partial<Params>) => {
     const sp = new URLSearchParams()
@@ -56,7 +64,7 @@ export function DaftarPemohon({
     <Card className="gap-0 overflow-hidden p-0">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b px-6 py-5">
         <div>
-          <h3 className="text-lg font-semibold">Daftar pemohon</h3>
+          <h3 className="text-lg font-semibold">{judul ?? "Daftar pemohon"}</h3>
           <p className="text-[15px] text-muted-foreground">{hasil.total.toLocaleString("id-ID")} pendataan ditemukan</p>
         </div>
         {hasil.total > 0 && (
@@ -76,11 +84,11 @@ export function DaftarPemohon({
             className="h-11 pl-10 text-[15px]"
           />
           {params.status && <input type="hidden" name="status" value={params.status} />}
-          {params.profesi && <input type="hidden" name="profesi" value={params.profesi} />}
+          {params.profesi && !profesiTetap && <input type="hidden" name="profesi" value={params.profesi} />}
           {params.polda && <input type="hidden" name="polda" value={params.polda} />}
         </form>
         <Segmen opsi={STATUS} aktif={params.status ?? ""} href={(v) => href({ status: v || undefined })} />
-        <Segmen opsi={PROFESI} aktif={params.profesi ?? ""} href={(v) => href({ profesi: v || undefined })} />
+        {!profesiTetap && <Segmen opsi={PROFESI} aktif={params.profesi ?? ""} href={(v) => href({ profesi: v || undefined })} />}
         {filterTambahan}
       </div>
 
@@ -93,7 +101,7 @@ export function DaftarPemohon({
           <TableHeader>
             <TableRow className="hover:bg-transparent">
               <TableHead className="h-12 pl-6 text-sm font-semibold uppercase tracking-wide">Pemohon</TableHead>
-              <TableHead className="h-12 text-sm font-semibold uppercase tracking-wide">Profesi & perusahaan</TableHead>
+              <TableHead className="h-12 text-sm font-semibold uppercase tracking-wide">{profesiTetap ? "Perusahaan" : "Profesi & perusahaan"}</TableHead>
               {showPolda && <TableHead className="h-12 text-sm font-semibold uppercase tracking-wide">Polda</TableHead>}
               <TableHead className="h-12 text-sm font-semibold uppercase tracking-wide">Tanggal</TableHead>
               <TableHead className="h-12 pr-6 text-sm font-semibold uppercase tracking-wide">Status</TableHead>
@@ -103,7 +111,7 @@ export function DaftarPemohon({
             {hasil.rows.map((r) => (
               <TableRow key={r.id} className="group cursor-pointer">
                 <TableCell className="py-4 pl-6">
-                  <Link href={`${basePath}/${r.id}`} className="flex items-center gap-3">
+                  <Link href={`${detailBase}/${r.id}`} className="flex items-center gap-3">
                     <span
                       className={cn(
                         "flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white",
@@ -119,8 +127,14 @@ export function DaftarPemohon({
                   </Link>
                 </TableCell>
                 <TableCell>
-                  <span className="block font-medium">{labelProfesi(r.profesi)}</span>
-                  <span className="block max-w-64 truncate text-sm text-muted-foreground">{r.perusahaan ?? "—"}</span>
+                  {profesiTetap ? (
+                    <span className="block max-w-80 truncate">{r.perusahaan ?? "—"}</span>
+                  ) : (
+                    <>
+                      <span className="block font-medium">{labelProfesi(r.profesi)}</span>
+                      <span className="block max-w-64 truncate text-sm text-muted-foreground">{r.perusahaan ?? "—"}</span>
+                    </>
+                  )}
                 </TableCell>
                 {showPolda && <TableCell>{r.polda.replace(/^Polda /, "")}</TableCell>}
                 <TableCell>

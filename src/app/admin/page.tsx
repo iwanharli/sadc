@@ -77,7 +77,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
 
       <SectionLabel title="Perlu perhatian" hint="pantau dan tindak lanjuti" />
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Sudah kedaluwarsa" description="Perlu perpanjangan" value={r.kedaluwarsa} hint="lihat di direktori" icon={TimerOff} tone="warning" href="/admin/pemohon?status=KEDALUWARSA" />
+        <StatCard label="Sudah kedaluwarsa" description="Perlu perpanjangan" value={r.kedaluwarsa} hint="lihat di direktori" icon={TimerOff} tone="warning" href="/admin/satpam?status=KEDALUWARSA" />
         <StatCard label="Segera kedaluwarsa" description="Berakhir ≤ 30 hari lagi" value={r.segeraKedaluwarsa} hint="ingatkan perpanjangan" icon={CalendarClock} tone="warning" />
         <StatCard label="KTA dibekukan" description="Nonaktif sementara" value={r.dibekukan} hint="perlu tindak lanjut" icon={ShieldAlert} tone="danger" href="/admin/sanksi" />
         <StatCard label="KTA dicabut" description="Nonaktif permanen" value={r.dicabut} hint="lihat daftar & alasan" icon={Ban} tone="danger" href="/admin/sanksi" />
@@ -116,7 +116,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
           bodyClassName="p-0"
           action={
             <Button variant="ghost" asChild>
-              <Link href="/admin/pemohon">
+              <Link href="/admin/satpam">
                 Semua <ArrowRight className="size-4" />
               </Link>
             </Button>

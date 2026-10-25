@@ -4,13 +4,14 @@ import {
   Building2,
   FileChartColumn,
   FileText,
+  HandCoins,
   LayoutDashboard,
   MapPinned,
   ScrollText,
+  ShieldCheck,
   ShieldX,
   UserCog,
   UserPlus,
-  Users,
   type LucideIcon,
 } from "lucide-react"
 
@@ -29,7 +30,8 @@ export const operatorNav: NavGroup[] = [
     label: "Pendataan",
     items: [
       { href: "/operator/pemohon/baru", label: "Pendataan Baru", icon: UserPlus },
-      { href: "/operator/pemohon", label: "Daftar Pemohon", icon: Users },
+      { href: "/operator/satpam", label: "Daftar Satpam", icon: ShieldCheck },
+      { href: "/operator/penagih-utang", label: "Daftar Penagih Utang", icon: HandCoins },
     ],
   },
   {
@@ -49,7 +51,8 @@ export const adminNav: NavGroup[] = [
   {
     label: "Data",
     items: [
-      { href: "/admin/pemohon", label: "Direktori Pemohon", icon: Users },
+      { href: "/admin/satpam", label: "Daftar Satpam", icon: ShieldCheck },
+      { href: "/admin/penagih-utang", label: "Daftar Penagih Utang", icon: HandCoins },
       { href: "/admin/perusahaan", label: "Perusahaan", icon: Building2 },
       { href: "/admin/laporan", label: "Laporan", icon: FileChartColumn },
     ],

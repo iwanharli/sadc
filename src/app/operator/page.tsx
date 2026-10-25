@@ -61,17 +61,17 @@ export default async function OperatorHome({ searchParams }: { searchParams: Pro
             label="KTA diterbitkan"
             description="Total KTA terbit di wilayah Anda"
             value={r.terbit}
-            hint="lihat daftar pemohon"
+            hint="lihat daftar Satpam"
             icon={Printer}
             tone="info"
-            href="/operator/pemohon"
+            href="/operator/satpam"
           />
         </div>
       </div>
 
       <SectionLabel title="Perlu perhatian" />
       <div className="grid gap-5 sm:grid-cols-3">
-        <StatCard label="Sudah kedaluwarsa" description="Ajukan perpanjangan" value={r.kedaluwarsa} icon={TimerOff} tone="warning" href="/operator/pemohon?status=KEDALUWARSA" />
+        <StatCard label="Sudah kedaluwarsa" description="Ajukan perpanjangan" value={r.kedaluwarsa} icon={TimerOff} tone="warning" href="/operator/satpam?status=KEDALUWARSA" />
         <StatCard label="Segera kedaluwarsa" description="Berakhir ≤ 30 hari lagi" value={r.segeraKedaluwarsa} icon={CalendarClock} tone="warning" />
         <StatCard label="Dibekukan / dicabut" description="KTA di wilayah Anda" value={r.dibekukan + r.dicabut} icon={ShieldAlert} tone="danger" href="/operator/sanksi" />
       </div>
@@ -102,7 +102,7 @@ export default async function OperatorHome({ searchParams }: { searchParams: Pro
             bodyClassName="p-0"
             action={
               <Button variant="ghost" asChild>
-                <Link href="/operator/pemohon">
+                <Link href="/operator/satpam">
                   Semua <ArrowRight className="size-4" />
                 </Link>
               </Button>

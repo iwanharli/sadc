@@ -8,6 +8,7 @@ import { TombolLanjutan } from "@/components/pendataan/tombol-lanjutan"
 import { catatAudit } from "@/server/audit"
 import { labelProfesi, StatusBadge } from "@/components/pendataan/status-badge"
 import { Button } from "@/components/ui/button"
+import { slugProfesi } from "@/lib/filter-pemohon"
 import { requireUser } from "@/server/auth"
 import { detailPengajuan } from "@/server/pendataan"
 import { getZona } from "@/server/zona"
@@ -34,7 +35,7 @@ export default async function DetailPemohonPage({ params }: { params: Promise<{ 
         actions={
           <>
             <Button variant="outline" size="lg" asChild className="h-11 text-[15px]">
-              <Link href="/operator/pemohon">
+              <Link href={`/operator/${slugProfesi(d.pengajuan.profesi)}`}>
                 <ArrowLeft className="size-4" /> Daftar
               </Link>
             </Button>
