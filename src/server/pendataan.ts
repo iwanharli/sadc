@@ -4,7 +4,7 @@ import type { PendataanInput } from "@/lib/pendataan-schema"
 import { db, schema } from "./db"
 import { dekripsiNik, hashNik } from "./nik"
 
-/** Data awal formulir untuk melengkapi draf. */
+/** Data formulir dari pengajuan lama (untuk perpanjangan / penggantian). */
 export async function muatPendataan(id: number, poldaId: number): Promise<PendataanInput | null> {
   const p = await db.query.pengajuan.findFirst({ where: and(eq(schema.pengajuan.id, id), eq(schema.pengajuan.poldaId, poldaId)) })
   if (!p) return null
@@ -74,7 +74,7 @@ export async function opsiFormulir(poldaId: number) {
 export type FilterPemohon = {
   poldaId?: number | null
   q?: string
-  status?: "DRAF" | "TERVERIFIKASI" | "DICETAK"
+  status?: "AKTIF" | "DIBEKUKAN" | "DICABUT" | "KEDALUWARSA"
   profesi?: "SATPAM" | "DEBT_COLLECTOR"
   page?: number
   perPage?: number
@@ -86,7 +86,7 @@ export async function daftarPemohon(f: FilterPemohon) {
   const page = Math.max(1, f.page ?? 1)
   const kondisi: (SQL | undefined)[] = [
     f.poldaId ? eq(schema.pengajuan.poldaId, f.poldaId) : undefined,
-    f.status ? eq(schema.pengajuan.status, f.status) : undefined,
+    f.status ? eq(schema.kartu.status, f.status) : undefined,
     f.profesi ? eq(schema.pengajuan.profesi, f.profesi) : undefined,
   ]
   // NIK terenkripsi: 16 digit dicari persis lewat hash, ≤ 6 digit lewat kode wilayah (awal NIK)
@@ -133,6 +133,7 @@ export async function daftarPemohon(f: FilterPemohon) {
       .select({ total: count() })
       .from(schema.pengajuan)
       .innerJoin(schema.pemohon, eq(schema.pengajuan.pemohonId, schema.pemohon.id))
+      .leftJoin(schema.kartu, eq(schema.kartu.pengajuanId, schema.pengajuan.id))
       .where(where),
   ])
   return {

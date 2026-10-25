@@ -1,9 +1,9 @@
 import "server-only"
-import { and, desc, eq, gte, lte, lt, sql } from "drizzle-orm"
+import { and, desc, eq, gte, lte, lt } from "drizzle-orm"
 import { hariIniDi } from "@/lib/waktu"
 import { db, schema } from "./db"
 
-export type JenisNotif = "KEDALUWARSA" | "DRAF_LAMA" | "SANKSI" | "TINJAU_LEWAT" | "CETAK_TERTUNDA"
+export type JenisNotif = "KEDALUWARSA" | "SANKSI" | "TINJAU_LEWAT"
 export type Notif = {
   id: string
   jenis: JenisNotif
@@ -21,7 +21,7 @@ const tglKe = (s: string) => new Date(s + "T00:00:00Z")
 
 /**
  * Notifikasi dihitung dari kondisi data saat ini (tanpa tabel antrean):
- * KTA segera kedaluwarsa, draf terbengkalai, sanksi baru, pembekuan lewat batas tinjau, antrean cetak tertunda.
+ * KTA segera kedaluwarsa, sanksi baru, dan pembekuan yang melewati batas tinjau.
  */
 export async function getNotifikasi(user: User, tz: string) {
   const admin = user.role === "ADMIN"
@@ -30,7 +30,7 @@ export async function getNotifikasi(user: User, tz: string) {
   const hariIni = hariIniDi(tz)
   const plus30 = new Date(tglKe(hariIni).getTime() + 30 * HARI).toISOString().slice(0, 10)
 
-  const [kedaluwarsa, sanksi, tinjau, draf, cetak] = await Promise.all([
+  const [kedaluwarsa, sanksi, tinjau] = await Promise.all([
     db
       .select({ pengajuanId: schema.pengajuan.id, nama: schema.pemohon.nama, noKta: schema.kartu.noKta, berlakuSd: schema.kartu.berlakuSd, polda: schema.polda.nama })
       .from(schema.kartu)
@@ -59,22 +59,6 @@ export async function getNotifikasi(user: User, tz: string) {
       .where(and(eq(schema.kartu.status, "DIBEKUKAN"), eq(schema.sanksi.jenis, "BEKU"), lt(schema.sanksi.berlakuSd, hariIni), wil))
       .orderBy(desc(schema.sanksi.berlakuSd))
       .limit(BATAS),
-    // draf yang lebih dari 7 hari tidak dilengkapi (hanya relevan bagi Operator)
-    admin
-      ? Promise.resolve([])
-      : db
-          .select({ id: schema.pengajuan.id, nama: schema.pemohon.nama, createdAt: schema.pengajuan.createdAt, kurang: sql<number>`jsonb_array_length(${schema.pengajuan.kekurangan})` })
-          .from(schema.pengajuan)
-          .innerJoin(schema.pemohon, eq(schema.pengajuan.pemohonId, schema.pemohon.id))
-          .where(and(eq(schema.pengajuan.status, "DRAF"), lt(schema.pengajuan.updatedAt, new Date(Date.now() - 7 * HARI)), wil))
-          .orderBy(desc(schema.pengajuan.updatedAt))
-          .limit(BATAS),
-    admin
-      ? Promise.resolve([] as { n: number; tertua: Date | null }[])
-      : db
-          .select({ n: sql<number>`count(*)::int`, tertua: sql<string | null>`to_char(min(${schema.pengajuan.terverifikasiAt}), 'YYYY-MM-DD"T"HH24:MI:SS"Z"')`.mapWith((v) => (v ? new Date(v) : null)) })
-          .from(schema.pengajuan)
-          .where(and(eq(schema.pengajuan.status, "TERVERIFIKASI"), lt(schema.pengajuan.terverifikasiAt, new Date(Date.now() - 3 * HARI)), wil)),
   ])
 
   const items: Notif[] = [
@@ -103,24 +87,6 @@ export async function getNotifikasi(user: User, tz: string) {
       at: tglKe(t.tinjauSd!),
       href: `${base}/${t.pengajuanId}`,
     })),
-    ...draf.map((d) => ({
-      id: `draf-${d.id}`,
-      jenis: "DRAF_LAMA" as const,
-      judul: `Draf ${d.nama} belum dilengkapi`,
-      isi: `Masih ${d.kurang} kekurangan sejak lebih dari 7 hari.`,
-      at: new Date(d.createdAt.getTime() + 7 * HARI),
-      href: `${base}/${d.id}`,
-    })),
-    ...cetak
-      .filter((c) => c.n > 0)
-      .map((c) => ({
-        id: "cetak",
-        jenis: "CETAK_TERTUNDA" as const,
-        judul: `${c.n} KTA belum diterbitkan lebih dari 3 hari`,
-        isi: "Pengajuan sudah terverifikasi otomatis dan menunggu dicetak.",
-        at: c.tertua ? new Date(c.tertua.getTime() + 3 * HARI) : new Date(),
-        href: "/operator/cetak",
-      })),
   ].sort((a, b) => b.at.getTime() - a.at.getTime())
 
   const u = await db.query.user.findFirst({ where: eq(schema.user.id, user.id), columns: { notifDibacaAt: true } })

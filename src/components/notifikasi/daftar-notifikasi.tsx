@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { BellOff, CalendarClock, FilePen, Printer, ShieldAlert, TimerReset, type LucideIcon } from "lucide-react"
+import { BellOff, CalendarClock, ShieldAlert, TimerReset, type LucideIcon } from "lucide-react"
 import { EmptyState } from "@/components/empty-state"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
@@ -9,10 +9,8 @@ import { TombolTandaiDibaca } from "./tombol-tandai"
 
 const IKON: Record<JenisNotif, { icon: LucideIcon; cls: string }> = {
   KEDALUWARSA: { icon: CalendarClock, cls: "bg-warning/15 text-warning" },
-  DRAF_LAMA: { icon: FilePen, cls: "bg-warning/15 text-warning" },
   SANKSI: { icon: ShieldAlert, cls: "bg-destructive/15 text-destructive" },
   TINJAU_LEWAT: { icon: TimerReset, cls: "bg-destructive/15 text-destructive" },
-  CETAK_TERTUNDA: { icon: Printer, cls: "bg-info/15 text-info" },
 }
 
 export function DaftarNotifikasi({

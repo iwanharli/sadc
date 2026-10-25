@@ -30,7 +30,7 @@ export async function rekapPerusahaan(hari: number, batas = 50) {
   return r.rows
 }
 
-/** Kinerja operator dalam periode: pendataan, terverifikasi, KTA diterbitkan, sanksi. */
+/** Kinerja operator dalam periode: pendataan (= KTA terbit, karena data lengkap langsung terbit) & sanksi. */
 export async function kinerjaOperator(hari: number) {
   const r = await db.execute<{
     id: string
@@ -39,15 +39,11 @@ export async function kinerjaOperator(hari: number) {
     polda: string | null
     aktif: boolean
     pendataan: number
-    terverifikasi: number
-    draf: number
     terbit: number
     sanksi: number
   }>(sql`
     select u.id, u.name as nama, u.username, pd.nama as polda, u.aktif,
            (select count(*)::int from pengajuan g where g.operator_id = u.id and g.created_at >= ${sejak(hari)}) as pendataan,
-           (select count(*)::int from pengajuan g where g.operator_id = u.id and g.terverifikasi_at >= ${sejak(hari)}) as terverifikasi,
-           (select count(*)::int from pengajuan g where g.operator_id = u.id and g.status = 'DRAF') as draf,
            (select count(*)::int from kartu k where k.dicetak_by = u.id and k.dicetak_at >= ${sejak(hari)}) as terbit,
            (select count(*)::int from sanksi s where s.oleh = u.id and s.at >= ${sejak(hari)}) as sanksi
       from "user" u

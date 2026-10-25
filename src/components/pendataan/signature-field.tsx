@@ -32,7 +32,10 @@ export function SignatureField({ value, onChange }: { value?: string; onChange: 
     }
     setLoading(true)
     try {
-      const blob = await (await fetch(pad.current.toDataURL("image/png"))).blob()
+      // toBlob langsung dari kanvas (fetch ke data: URL diblokir CSP connect-src)
+      const blob = await new Promise<Blob>((ok, gagal) =>
+        canvas.current!.toBlob((b) => (b ? ok(b) : gagal(new Error("Gagal membaca tanda tangan"))), "image/png"),
+      )
       onChange(await unggah(blob, "ttd.png"))
       setEditing(false)
     } catch (e) {

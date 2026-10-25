@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { ArrowLeft, PencilLine } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 import { PageHeader } from "@/components/page-header"
 import { DetailPemohon } from "@/components/pendataan/detail-pemohon"
 import { AksiKta } from "@/components/sanksi/aksi-kta"
@@ -38,14 +38,7 @@ export default async function DetailPemohonPage({ params }: { params: Promise<{ 
                 <ArrowLeft className="size-4" /> Daftar
               </Link>
             </Button>
-            {d.kartu && <TombolLanjutan pengajuanId={id} statusKartu={d.kartu.status} noKta={d.kartu.noKta} />}
-            {d.pengajuan.status === "DRAF" && (
-              <Button size="lg" asChild className="h-11 px-5 text-[15px]">
-                <Link href={`/operator/pemohon/${id}/lengkapi`}>
-                  <PencilLine className="size-4" /> Lengkapi data
-                </Link>
-              </Button>
-            )}
+            {d.kartu && <TombolLanjutan pengajuanId={id} statusKartu={d.kartu.status} />}
           </>
         }
       />

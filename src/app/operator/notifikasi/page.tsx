@@ -12,7 +12,7 @@ export default async function NotifikasiPage({ searchParams }: { searchParams: P
     <>
       <PageHeader
         title="Notifikasi"
-        description="KTA segera kedaluwarsa, draf terbengkalai, antrean cetak, dan sanksi di wilayah Anda."
+        description="KTA segera kedaluwarsa, sanksi, dan pembekuan yang perlu ditinjau di wilayah Anda."
       />
       <DaftarNotifikasi
         {...n}

@@ -6,7 +6,7 @@ import { hashNik } from "./nik"
 
 /**
  * Mesin verifikasi otomatis. Setiap aturan berdiri sendiri dan mengembalikan
- * daftar kekurangan (kosong = lolos). Pengajuan TERVERIFIKASI bila semua aturan lolos.
+ * daftar kekurangan (kosong = lolos). Data hanya disimpan & KTA diterbitkan bila semua aturan lolos.
  * Validator instansi lain (Dukcapil, SKCK online, APPI) nantinya cukup ditambah sebagai aturan baru.
  */
 export type Konteks = {

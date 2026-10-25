@@ -70,14 +70,13 @@ async function main() {
     const p = pick(poldaPool)
     const profesi = rand() < 0.68 ? "SATPAM" : "DEBT_COLLECTOR"
     const createdAt = tanggalAcak()
-    const umurHari = (Date.now() - createdAt.getTime()) / 86_400_000
     const prov = p.provinsiKode[0] ?? "31"
     const operator = operators.find((o) => o.poldaId === p.id) ?? operators[0]
     const perus = perusahaan.filter((c) => c.poldaId === p.id && c.jenis === (profesi === "SATPAM" ? "BUJP" : "PEMBIAYAAN"))
 
     // status: makin lama makin besar kemungkinan sudah dicetak
-    const r = rand()
-    const status = umurHari < 3 && r < 0.5 ? "DRAF" : r < 0.07 ? "DRAF" : umurHari < 7 && r < 0.4 ? "TERVERIFIKASI" : r < 0.12 ? "TERVERIFIKASI" : "DICETAK"
+    // setiap pendataan tersimpan dalam keadaan lengkap → KTA langsung terbit
+    const status = "DICETAK" as const
 
     const [pemohon] = await db
       .insert(schema.pemohon)
@@ -102,15 +101,15 @@ async function main() {
         poldaId: p.id,
         operatorId: operator.id,
         status,
-        kekurangan: status === "DRAF" ? [pick(["SKCK belum diunggah", "Sidik jari belum direkam", "Surat sehat kedaluwarsa"])] : [],
-        terverifikasiAt: status === "DRAF" ? null : createdAt,
+        kekurangan: [],
+        terverifikasiAt: createdAt,
         createdAt,
         updatedAt: createdAt,
       })
       .returning()
 
-    if (status === "DICETAK") {
-      const terbit = new Date(createdAt.getTime() + 86_400_000 * (1 + Math.floor(rand() * 3)))
+    {
+      const terbit = createdAt
       const berlaku = new Date(terbit)
       berlaku.setFullYear(berlaku.getFullYear() + 2)
       // sebagian kartu dibuat segera kedaluwarsa (≤ 30 hari) agar fitur pengingat terlihat

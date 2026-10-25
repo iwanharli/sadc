@@ -58,21 +58,24 @@ Aplikasi dipakai **secara nasional**: satu server pusat (Mabes/Baharkam), diakse
 
 Operator terikat ke satu **Polda** (opsional Polres).
 
-## 4. Alur Status Pendataan
+## 4. Alur Pendataan
 
-Pendataan dilakukan **Operator**; verifikasi dilakukan **otomatis oleh sistem** begitu semua persyaratan lengkap. Admin hanya memantau.
+Tidak ada draf dan tidak ada antrean cetak. Operator mengisi formulir **lengkap**; saat disimpan sistem menjalankan verifikasi otomatis:
+
+- **Belum lengkap** → data **tidak disimpan**, daftar kekurangan ditampilkan untuk diperbaiki.
+- **Lengkap** → pengajuan tersimpan dan **KTA langsung diterbitkan** (nomor KTA, masa berlaku, token QR), lalu KTA & sertifikat bisa dicetak.
 
 ```
-DRAF (belum lengkap) → TERVERIFIKASI (otomatis) → DICETAK → AKTIF → KEDALUWARSA
-AKTIF → DIBEKUKAN ↔ AKTIF
-AKTIF → DICABUT
+Formulir lengkap ──simpan──▶ Verifikasi otomatis ──lolos──▶ KTA AKTIF ──▶ KEDALUWARSA (job tiap jam)
+                                   │                          ├──▶ DIBEKUKAN ⇄ AKTIF
+                                   └─gagal─▶ tidak disimpan    └──▶ DICABUT
 ```
 
-Jenis pengajuan: **Baru**, **Perpanjangan**, **Penggantian** (hilang/rusak).
+Jenis pengajuan: **Baru**, **Perpanjangan**, **Penggantian**. Perpanjangan/penggantian dibuka dari detail KTA lama: formulir terisi otomatis (biodata, perusahaan, dokumen tetap, sidik jari, tanda tangan); foto & dokumen bermasa berlaku diperbarui. KTA lama otomatis menjadi KEDALUWARSA saat KTA baru terbit.
 
 ### Aturan verifikasi otomatis
 
-Pengajuan otomatis menjadi **TERVERIFIKASI** saat disimpan jika semua kondisi berikut terpenuhi:
+Pengajuan hanya bisa disimpan (dan KTA diterbitkan) jika semua kondisi berikut terpenuhi:
 
 1. Biodata wajib terisi; NIK 16 digit valid, tidak memiliki KTA aktif/dibekukan dengan profesi yang sama, dan **tidak masuk blacklist**.
 2. Perusahaan (BUJP / perusahaan pembiayaan) dipilih dan berstatus aktif.
@@ -81,7 +84,7 @@ Pengajuan otomatis menjadi **TERVERIFIKASI** saat disimpan jika semua kondisi be
 5. Biometrik lengkap: foto wajah, sidik jari, tanda tangan.
 6. Khusus Satpam: jenjang Gada & nomor sertifikat terisi. Khusus Debt Collector: nomor SPPI terisi & masih berlaku.
 
-Jika ada yang belum terpenuhi, status tetap **DRAF** dan sistem menampilkan checklist kekurangan. Setiap verifikasi otomatis dicatat di `riwayat_status` (oleh: SISTEM) beserta snapshot hasil pengecekan.
+Jika ada yang belum terpenuhi, data tidak disimpan dan sistem menampilkan checklist kekurangan. Setiap verifikasi otomatis dicatat di `riwayat_status` (oleh: SISTEM) beserta snapshot hasil pengecekan.
 
 Karena keabsahan isi dokumen tidak dicek manusia, Admin dan Operator dapat **membekukan/mencabut** KTA bila belakangan ditemukan dokumen palsu.
 
@@ -146,10 +149,9 @@ Aturan:
   3. Perusahaan & data profesi
   4. Unggah dokumen (checklist sesuai profesi)
   5. Biometrik: foto wajah, sidik jari, tanda tangan
-  6. Ringkasan + checklist kelengkapan → simpan (otomatis terverifikasi bila lengkap)
-- `/operator/pemohon/[id]` — detail, checklist kekurangan, riwayat status, aksi bekukan/cabut/pulihkan
+  6. Ringkasan + checklist kelengkapan → **Simpan & terbitkan KTA** (hanya aktif bila lengkap)
+- `/operator/pemohon/[id]` — detail, cetak KTA & sertifikat, perpanjang / penggantian, riwayat status, aksi bekukan/cabut/pulihkan
 - `/operator/sanksi` — daftar KTA dibekukan/dicabut di wilayahnya
-- `/operator/cetak` — antrean cetak (status Terverifikasi), terbitkan KTA, cetak/cetak ulang KTA & sertifikat (PDF)
 - `/operator/notifikasi` — KTA segera kedaluwarsa, draf terbengkalai, antrean cetak tertunda, sanksi
 - `/operator/profil` — profil, sesi masuk, aktivitas, ganti sandi
 

@@ -33,8 +33,6 @@ export async function getRingkasan(poldaId?: number | null) {
   const [p] = await db
     .select({
       total: count(),
-      draf: sql<number>`count(*) filter (where ${pengajuan.status} = 'DRAF')`.mapWith(Number),
-      menungguCetak: sql<number>`count(*) filter (where ${pengajuan.status} = 'TERVERIFIKASI')`.mapWith(Number),
       satpam: sql<number>`count(*) filter (where ${pengajuan.profesi} = 'SATPAM')`.mapWith(Number),
       dc: sql<number>`count(*) filter (where ${pengajuan.profesi} = 'DEBT_COLLECTOR')`.mapWith(Number),
     })
@@ -46,6 +44,8 @@ export async function getRingkasan(poldaId?: number | null) {
       aktif: sql<number>`count(*) filter (where ${kartu.status} = 'AKTIF')`.mapWith(Number),
       dibekukan: sql<number>`count(*) filter (where ${kartu.status} = 'DIBEKUKAN')`.mapWith(Number),
       dicabut: sql<number>`count(*) filter (where ${kartu.status} = 'DICABUT')`.mapWith(Number),
+      kedaluwarsa: sql<number>`count(*) filter (where ${kartu.status} = 'KEDALUWARSA')`.mapWith(Number),
+      terbit: count(),
       segeraKedaluwarsa: sql<number>`count(*) filter (where ${kartu.status} = 'AKTIF' and ${kartu.berlakuSd} <= current_date + 30)`.mapWith(Number),
     })
     .from(kartu)
@@ -98,12 +98,14 @@ export async function getPendataanTerbaru(limit: number, poldaId?: number | null
       noRegistrasi: pengajuan.noRegistrasi,
       profesi: pengajuan.profesi,
       status: pengajuan.status,
+      kartu: kartu.status,
       createdAt: pengajuan.createdAt,
       nama: schema.pemohon.nama,
       polda: polda.nama,
     })
     .from(pengajuan)
     .innerJoin(schema.pemohon, eq(pengajuan.pemohonId, schema.pemohon.id))
+    .leftJoin(kartu, eq(kartu.pengajuanId, pengajuan.id))
     .innerJoin(polda, eq(pengajuan.poldaId, polda.id))
     .where(poldaId ? eq(pengajuan.poldaId, poldaId) : undefined)
     .orderBy(sql`${pengajuan.createdAt} desc`)

@@ -1,4 +1,4 @@
-import { CircleAlert, CircleCheck, FileText, History, IdCard } from "lucide-react"
+import { CircleCheck, FileText, History, IdCard } from "lucide-react"
 import { ChartCard } from "@/components/dashboard/chart-card"
 import { cn } from "@/lib/utils"
 import { formatTanggal, formatWaktu, hariIniDi } from "@/lib/waktu"
@@ -27,31 +27,16 @@ export function DetailPemohon({ d, tz, aksiKta }: { d: Detail; tz: string; aksiK
 
   return (
     <div className="space-y-6">
-      {p.status === "DRAF" && p.kekurangan.length > 0 && (
-        <div className="flex items-start gap-4 rounded-2xl border border-warning/50 bg-warning/10 p-5">
-          <CircleAlert className="size-7 shrink-0 text-warning" />
-          <div>
-            <p className="text-lg font-semibold">{p.kekurangan.length} persyaratan belum terpenuhi</p>
-            <ul className="mt-2 grid list-disc gap-x-8 gap-y-1 pl-5 text-[15px] sm:grid-cols-2">
-              {p.kekurangan.map((k) => (
-                <li key={k}>{k}</li>
-              ))}
-            </ul>
-          </div>
+      <div className="flex items-start gap-4 rounded-2xl border border-success/40 bg-success/10 p-5">
+        <CircleCheck className="size-7 shrink-0 text-success" />
+        <div>
+          <p className="text-lg font-semibold">Terverifikasi otomatis & KTA diterbitkan</p>
+          <p className="text-[15px] text-muted-foreground">
+            Semua persyaratan terpenuhi pada {tgl(p.terverifikasiAt ?? p.createdAt, true)}
+            {d.kartu && <> · KTA {d.kartu.noKta}</>}.
+          </p>
         </div>
-      )}
-      {p.status !== "DRAF" && (
-        <div className="flex items-start gap-4 rounded-2xl border border-success/40 bg-success/10 p-5">
-          <CircleCheck className="size-7 shrink-0 text-success" />
-          <div>
-            <p className="text-lg font-semibold">Terverifikasi otomatis</p>
-            <p className="text-[15px] text-muted-foreground">
-              Semua persyaratan terpenuhi pada {tgl(p.terverifikasiAt, true)}.
-              {p.status === "TERVERIFIKASI" && " Menunggu pencetakan KTA & sertifikat."}
-            </p>
-          </div>
-        </div>
-      )}
+      </div>
 
       <div className="grid gap-6 xl:grid-cols-3">
         <div className="space-y-6 xl:col-span-2">

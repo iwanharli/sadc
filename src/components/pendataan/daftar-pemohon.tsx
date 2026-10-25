@@ -15,9 +15,10 @@ type Params = { q?: string; status?: string; profesi?: string; polda?: string; p
 
 const STATUS = [
   { v: "", t: "Semua" },
-  { v: "DRAF", t: "Draf" },
-  { v: "TERVERIFIKASI", t: "Terverifikasi" },
-  { v: "DICETAK", t: "Dicetak" },
+  { v: "AKTIF", t: "Aktif" },
+  { v: "DIBEKUKAN", t: "Dibekukan" },
+  { v: "DICABUT", t: "Dicabut" },
+  { v: "KEDALUWARSA", t: "Kedaluwarsa" },
 ]
 const PROFESI = [
   { v: "", t: "Semua profesi" },
@@ -128,9 +129,6 @@ export function DaftarPemohon({
                 </TableCell>
                 <TableCell className="pr-6">
                   <StatusBadge status={r.status} kartu={r.kartu} />
-                  {r.status === "DRAF" && r.kekurangan.length > 0 && (
-                    <span className="mt-1 block text-sm text-muted-foreground">{r.kekurangan.length} kekurangan</span>
-                  )}
                 </TableCell>
               </TableRow>
             ))}

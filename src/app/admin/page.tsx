@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ArrowRight, Ban, BadgeCheck, CalendarClock, FilePen, Printer, ShieldAlert } from "lucide-react"
+import { ArrowRight, Ban, BadgeCheck, CalendarClock, Printer, ShieldAlert, TimerOff } from "lucide-react"
 import { ChartCard } from "@/components/dashboard/chart-card"
 import { PoldaChart, TrenChart } from "@/components/dashboard/charts"
 import { PetaSebaran } from "@/components/dashboard/peta-sebaran"
@@ -60,15 +60,15 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
             label="KTA aktif"
             description="Kartu berlaku saat ini, seluruh Polda"
             value={r.aktif}
-            hint={`dari ${nf.format(r.total)} total pendataan`}
+            hint={`dari ${nf.format(r.terbit)} KTA diterbitkan`}
             icon={BadgeCheck}
             tone="success"
           />
           <StatCard
-            label="Menunggu cetak"
-            description="Terverifikasi otomatis, belum dicetak"
-            value={r.menungguCetak}
-            hint="siap dicetak Operator"
+            label="KTA diterbitkan"
+            description="Seluruh KTA yang pernah terbit"
+            value={r.terbit}
+            hint="otomatis saat data lengkap disimpan"
             icon={Printer}
             tone="info"
           />
@@ -77,7 +77,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
 
       <SectionLabel title="Perlu perhatian" hint="pantau dan tindak lanjuti" />
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Draf belum lengkap" description="Persyaratan belum terpenuhi" value={r.draf} hint="menunggu Operator melengkapi" icon={FilePen} tone="warning" />
+        <StatCard label="Sudah kedaluwarsa" description="Perlu perpanjangan" value={r.kedaluwarsa} hint="lihat di direktori" icon={TimerOff} tone="warning" href="/admin/pemohon?status=KEDALUWARSA" />
         <StatCard label="Segera kedaluwarsa" description="Berakhir ≤ 30 hari lagi" value={r.segeraKedaluwarsa} hint="ingatkan perpanjangan" icon={CalendarClock} tone="warning" />
         <StatCard label="KTA dibekukan" description="Nonaktif sementara" value={r.dibekukan} hint="perlu tindak lanjut" icon={ShieldAlert} tone="danger" href="/admin/sanksi" />
         <StatCard label="KTA dicabut" description="Nonaktif permanen" value={r.dicabut} hint="lihat daftar & alasan" icon={Ban} tone="danger" href="/admin/sanksi" />

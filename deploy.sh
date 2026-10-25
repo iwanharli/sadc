@@ -89,6 +89,7 @@ npx drizzle-kit migrate 2>&1 | grep -E "applied|error" || true
 info "enkripsi data lama (NIK & file) bila ada"
 npm run --silent nik:enkripsi
 npm run --silent storage:enkripsi
+npm run --silent migrasi:tanpa-draf
 
 info "build (folder terpisah agar versi berjalan tidak terganggu)"
 rm -rf .next-build

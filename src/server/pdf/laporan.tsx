@@ -3,10 +3,10 @@ import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer"
 const TEAL = "#0f766e"
 const nf = new Intl.NumberFormat("id-ID")
 
-type Ringkasan = { total: number; aktif: number; draf: number; menungguCetak: number; dibekukan: number; dicabut: number; segeraKedaluwarsa: number }
+type Ringkasan = { total: number; aktif: number; terbit: number; kedaluwarsa: number; dibekukan: number; dicabut: number; segeraKedaluwarsa: number }
 type Polda = { nama: string; satpam: number; dc: number; total: number }
 type Perusahaan = { nama: string; jenis: string; polda: string; pendataan: number; terbit: number; aktif: number }
-type Operator = { nama: string; polda: string | null; pendataan: number; terverifikasi: number; terbit: number; draf: number; sanksi: number }
+type Operator = { nama: string; polda: string | null; pendataan: number; terbit: number; sanksi: number }
 
 const s = StyleSheet.create({
   page: { fontFamily: "Helvetica", fontSize: 9, color: "#0f172a", paddingVertical: 32, paddingHorizontal: 36 },
@@ -65,8 +65,8 @@ export function LaporanPdf({
   const kpi = [
     ["Pendataan periode ini", tren.total],
     ["KTA aktif", ringkasan.aktif],
-    ["Menunggu cetak", ringkasan.menungguCetak],
-    ["Draf belum lengkap", ringkasan.draf],
+    ["Total KTA terbit", ringkasan.terbit],
+    ["Sudah kedaluwarsa", ringkasan.kedaluwarsa],
     ["Kedaluwarsa dalam 30 hari", ringkasan.segeraKedaluwarsa],
     ["Dibekukan / dicabut", ringkasan.dibekukan + ringkasan.dicabut],
   ] as const
@@ -128,13 +128,11 @@ export function LaporanPdf({
         <Tabel
           rows={operator}
           kolom={[
-            { t: "Operator", w: 30, v: (r: Operator) => r.nama },
-            { t: "Polda", w: 20, v: (r) => r.polda?.replace(/^Polda /, "") ?? "-" },
-            { t: "Didata", w: 10, kanan: true, v: (r) => nf.format(r.pendataan) },
-            { t: "Terverifikasi", w: 12, kanan: true, v: (r) => nf.format(r.terverifikasi) },
-            { t: "KTA terbit", w: 10, kanan: true, v: (r) => nf.format(r.terbit) },
-            { t: "Draf", w: 9, kanan: true, v: (r) => nf.format(r.draf) },
-            { t: "Sanksi", w: 9, kanan: true, v: (r) => nf.format(r.sanksi) },
+            { t: "Operator", w: 38, v: (r: Operator) => r.nama },
+            { t: "Polda", w: 26, v: (r) => r.polda?.replace(/^Polda /, "") ?? "-" },
+            { t: "Didata", w: 12, kanan: true, v: (r) => nf.format(r.pendataan) },
+            { t: "KTA terbit", w: 12, kanan: true, v: (r) => nf.format(r.terbit) },
+            { t: "Sanksi", w: 12, kanan: true, v: (r) => nf.format(r.sanksi) },
           ]}
         />
 

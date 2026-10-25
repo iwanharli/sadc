@@ -16,7 +16,6 @@ import {
   HandCoins,
   Loader2,
   PenLine,
-  Save,
   Search,
   ShieldCheck,
   UserRound,
@@ -35,6 +34,7 @@ import { PENDIDIKAN, pendataanSchema, type PendataanData, type PendataanInput } 
 import { swal } from "@/lib/swal"
 import { cn } from "@/lib/utils"
 import { cekNik, periksaPendataan, simpanPendataan } from "@/server/actions/pendataan"
+import { bukaPdf } from "@/components/cetak/tombol-cetak"
 import { CameraCapture } from "./camera-capture"
 import { FileField } from "./file-field"
 import { SignatureField } from "./signature-field"
@@ -101,12 +101,10 @@ export function PendataanWizard({
   perusahaan,
   jenisDokumen,
   initial,
-  pengajuanId,
 }: {
   perusahaan: PerusahaanOpsi[]
   jenisDokumen: JenisDokumenOpsi[]
   initial?: PendataanInput
-  pengajuanId?: number
 }) {
   const router = useRouter()
   const [step, setStep] = useState(0)
@@ -135,8 +133,8 @@ export function PendataanWizard({
   useEffect(() => {
     if (step !== LANGKAH.length - 1) return
     setPeriksa(null)
-    periksaPendataan(getValues(), pengajuanId).then(setPeriksa)
-  }, [step, getValues, pengajuanId])
+    periksaPendataan(getValues()).then(setPeriksa)
+  }, [step, getValues])
 
   async function ke(target: number) {
     if (target > step) {
@@ -182,37 +180,40 @@ export function PendataanWizard({
     }
   }
 
-  function simpan(akhir: boolean) {
+  function simpan() {
     startSimpan(async () => {
-      if (!(await trigger(["profesi", "jenis", "nik", "nama"]))) {
-        setStep(0)
-        await swal.fire({ icon: "warning", title: "Data belum lengkap", text: "Profesi, NIK, dan nama wajib diisi sebelum menyimpan.", confirmButtonText: "Oke" })
-        return
-      }
       if (!(await trigger())) {
         await swal.fire({ icon: "warning", title: "Periksa kembali isian", text: "Ada format isian yang belum benar.", confirmButtonText: "Oke" })
         return
       }
-      const res = await simpanPendataan(getValues(), pengajuanId)
+      const res = await simpanPendataan(getValues())
       if (!res.ok) {
-        await swal.fire({ icon: "error", title: "Gagal menyimpan", text: res.error, confirmButtonText: "Tutup" })
+        const daftar = res.kekurangan?.length
+          ? `<ul style="text-align:left;margin-top:10px;line-height:1.7;list-style:disc;padding-left:20px">${res.kekurangan
+              .map((k) => `<li>${k}</li>`)
+              .join("")}</ul>`
+          : ""
+        await swal.fire({
+          icon: "warning",
+          title: res.kekurangan?.length ? "Data belum lengkap" : "Gagal menyimpan",
+          html: `${res.kekurangan?.length ? "Lengkapi kekurangan berikut lalu simpan kembali. Data belum disimpan." : res.error}${daftar}`,
+          confirmButtonText: "Perbaiki",
+        })
         return
       }
-      if (res.data.status === "TERVERIFIKASI") {
-        await swal.fire({
-          icon: "success",
-          title: "Terverifikasi otomatis",
-          html: "Semua persyaratan terpenuhi. Pengajuan masuk <b>antrean cetak</b>.",
-          confirmButtonText: "Lihat detail",
-        })
-      } else {
-        await swal.fire({
-          icon: akhir ? "warning" : "success",
-          title: akhir ? "Disimpan sebagai draf" : "Draf tersimpan",
-          html: `Masih ada <b>${res.data.kekurangan.length}</b> kekurangan. Lengkapi kapan saja dari halaman detail.`,
-          confirmButtonText: "Lihat detail",
-        })
-      }
+      const pilih = await swal.fire({
+        icon: "success",
+        title: "KTA diterbitkan",
+        html: `Semua persyaratan terpenuhi. Nomor KTA <b style="font-family:monospace">${res.data.noKta}</b>`,
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: "Cetak KTA",
+        denyButtonText: "Cetak sertifikat",
+        cancelButtonText: "Lihat detail",
+        customClass: { popup: "sadc-swal", confirmButton: "swal-btn-primary", denyButton: "swal-btn-outline", cancelButton: "swal-btn-ghost" },
+      })
+      if (pilih.isConfirmed) bukaPdf(res.data.kartuId, "kta")
+      if (pilih.isDenied) bukaPdf(res.data.kartuId, "sertifikat")
       router.push(`/operator/pemohon/${res.data.id}`)
       router.refresh()
     })
@@ -594,18 +595,21 @@ export function PendataanWizard({
             <Button type="button" variant="outline" size="lg" className="h-11 text-[15px]" disabled={step === 0} onClick={() => ke(step - 1)}>
               <ArrowLeft className="size-4" /> Kembali
             </Button>
-            <Button type="button" variant="ghost" size="lg" className="h-11 text-[15px]" disabled={menyimpan} onClick={() => simpan(false)}>
-              <Save className="size-4" /> Simpan draf
-            </Button>
             <div className="ml-auto">
               {step < LANGKAH.length - 1 ? (
                 <Button type="button" size="lg" className="h-11 px-6 text-[15px]" onClick={() => ke(step + 1)}>
                   Lanjut <ArrowRight className="size-4" />
                 </Button>
               ) : (
-                <Button type="button" size="lg" className="h-11 px-6 text-[15px]" disabled={menyimpan || !periksa} onClick={() => simpan(true)}>
+                <Button
+                  type="button"
+                  size="lg"
+                  className="h-11 px-6 text-[15px]"
+                  disabled={menyimpan || !periksa?.ok || !periksa.data.lolos}
+                  onClick={simpan}
+                >
                   {menyimpan ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
-                  {periksa?.ok && periksa.data.lolos ? "Simpan & verifikasi" : "Simpan"}
+                  Simpan & terbitkan KTA
                 </Button>
               )}
             </div>
@@ -647,8 +651,8 @@ function Ringkasan({ periksa }: { periksa: HasilPeriksa | null }) {
           <p className="text-lg font-semibold">{lolos ? "Semua persyaratan terpenuhi" : `${kekurangan.length} kekurangan ditemukan`}</p>
           <p className="text-[15px] text-muted-foreground">
             {lolos
-              ? "Saat disimpan, pengajuan langsung terverifikasi otomatis dan masuk antrean cetak."
-              : "Data tetap bisa disimpan sebagai draf dan dilengkapi nanti."}
+              ? "Saat disimpan, pengajuan terverifikasi otomatis dan KTA langsung diterbitkan."
+              : "Data belum bisa disimpan. Kembali ke langkah terkait untuk melengkapinya."}
           </p>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ArrowRight, BadgeCheck, CalendarClock, FilePen, Printer, ShieldAlert, UserPlus, Users } from "lucide-react"
+import { ArrowRight, BadgeCheck, CalendarClock, Printer, ShieldAlert, TimerOff, UserPlus, Users } from "lucide-react"
 import { ChartCard } from "@/components/dashboard/chart-card"
 import { TrenChart } from "@/components/dashboard/charts"
 import { HeroTotal } from "@/components/dashboard/hero-total"
@@ -58,20 +58,20 @@ export default async function OperatorHome({ searchParams }: { searchParams: Pro
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-1">
           <StatCard label="KTA aktif" description="Kartu berlaku di wilayah Anda" value={r.aktif} icon={BadgeCheck} tone="success" />
           <StatCard
-            label="Menunggu cetak"
-            description="Sudah terverifikasi otomatis"
-            value={r.menungguCetak}
-            hint="buka antrean cetak"
+            label="KTA diterbitkan"
+            description="Total KTA terbit di wilayah Anda"
+            value={r.terbit}
+            hint="lihat daftar pemohon"
             icon={Printer}
             tone="info"
-            href="/operator/cetak"
+            href="/operator/pemohon"
           />
         </div>
       </div>
 
       <SectionLabel title="Perlu perhatian" />
       <div className="grid gap-5 sm:grid-cols-3">
-        <StatCard label="Draf belum lengkap" description="Lengkapi persyaratannya" value={r.draf} icon={FilePen} tone="warning" href="/operator/pemohon" />
+        <StatCard label="Sudah kedaluwarsa" description="Ajukan perpanjangan" value={r.kedaluwarsa} icon={TimerOff} tone="warning" href="/operator/pemohon?status=KEDALUWARSA" />
         <StatCard label="Segera kedaluwarsa" description="Berakhir ≤ 30 hari lagi" value={r.segeraKedaluwarsa} icon={CalendarClock} tone="warning" />
         <StatCard label="Dibekukan / dicabut" description="KTA di wilayah Anda" value={r.dibekukan + r.dicabut} icon={ShieldAlert} tone="danger" href="/operator/sanksi" />
       </div>

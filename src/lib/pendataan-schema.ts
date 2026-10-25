@@ -2,8 +2,8 @@ import { z } from "zod"
 
 /**
  * Skema data formulir pendataan — dipakai di formulir (klien) dan server action.
- * Sengaja longgar: draf boleh belum lengkap. Kelengkapan dinilai oleh mesin
- * verifikasi otomatis (src/server/verifikasi.ts), bukan oleh skema ini.
+ * Skema ini hanya memeriksa format; kelengkapan dinilai oleh mesin verifikasi otomatis
+ * (src/server/verifikasi.ts). Data hanya disimpan bila semua aturan verifikasi lolos.
  */
 const opsional = z.string().trim().optional().or(z.literal("")).transform((v) => v || undefined)
 const tanggal = z

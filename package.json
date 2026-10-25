@@ -15,7 +15,8 @@
     "db:demo": "tsx scripts/seed-demo.ts",
     "storage:enkripsi": "tsx scripts/enkripsi-file.ts",
     "job:kedaluwarsa": "tsx scripts/job-kedaluwarsa.ts",
-    "nik:enkripsi": "tsx scripts/enkripsi-nik.ts"
+    "nik:enkripsi": "tsx scripts/enkripsi-nik.ts",
+    "migrasi:tanpa-draf": "tsx scripts/migrasi-tanpa-draf.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.2",

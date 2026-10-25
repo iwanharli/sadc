@@ -6,7 +6,6 @@ import {
   FileText,
   LayoutDashboard,
   MapPinned,
-  Printer,
   ScrollText,
   ShieldX,
   UserCog,
@@ -31,7 +30,6 @@ export const operatorNav: NavGroup[] = [
     items: [
       { href: "/operator/pemohon/baru", label: "Pendataan Baru", icon: UserPlus },
       { href: "/operator/pemohon", label: "Daftar Pemohon", icon: Users },
-      { href: "/operator/cetak", label: "Antrean Cetak", icon: Printer },
     ],
   },
   {

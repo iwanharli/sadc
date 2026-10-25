@@ -82,15 +82,13 @@ export default async function LaporanPage({ searchParams }: { searchParams: Prom
       </div>
 
       <SectionLabel title="Kinerja operator" hint={`${operator.length} operator`} />
-      <ChartCard title="Aktivitas operator" description="Pendataan, verifikasi, penerbitan KTA, dan sanksi dalam periode" bodyClassName="p-0">
+      <ChartCard title="Aktivitas operator" description="Pendataan, KTA yang diterbitkan, dan sanksi dalam periode" bodyClassName="p-0">
         <Table className="text-[15px]">
           <TableHeader>
             <TableRow className="hover:bg-transparent">
               <TableHead className={cn(th, "pl-6")}>Operator</TableHead>
-              <TableHead className={cn(th, "w-[26%]")}>Pendataan</TableHead>
-              <TableHead className={cn(th, "text-right")}>Terverifikasi</TableHead>
+              <TableHead className={cn(th, "w-[34%]")}>Pendataan</TableHead>
               <TableHead className={cn(th, "text-right")}>KTA terbit</TableHead>
-              <TableHead className={cn(th, "text-right")}>Draf terbuka</TableHead>
               <TableHead className={cn(th, "pr-6 text-right")}>Sanksi</TableHead>
             </TableRow>
           </TableHeader>
@@ -111,9 +109,7 @@ export default async function LaporanPage({ searchParams }: { searchParams: Prom
                     <span className="w-10 text-right font-semibold tabular-nums">{nf.format(o.pendataan)}</span>
                   </div>
                 </TableCell>
-                <TableCell className="text-right tabular-nums">{nf.format(o.terverifikasi)}</TableCell>
                 <TableCell className="text-right tabular-nums">{nf.format(o.terbit)}</TableCell>
-                <TableCell className={cn("text-right tabular-nums", o.draf > 10 && "font-semibold text-warning")}>{nf.format(o.draf)}</TableCell>
                 <TableCell className="pr-6 text-right tabular-nums">{nf.format(o.sanksi)}</TableCell>
               </TableRow>
             ))}
