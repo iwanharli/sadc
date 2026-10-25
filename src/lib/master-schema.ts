@@ -11,6 +11,7 @@ export const jenisDokumenSchema = z.object({
   wajib: z.boolean(),
   wajibUntuk: z.array(z.enum(["BARU", "PERPANJANGAN", "PENGGANTIAN"])),
   adaMasaBerlaku: z.boolean(),
+  jamak: z.boolean(),
   urutan: z.coerce.number().int().min(0).max(999),
   aktif: z.boolean(),
 })

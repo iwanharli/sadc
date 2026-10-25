@@ -35,16 +35,26 @@ export async function muatPendataan(id: number, poldaId: number): Promise<Pendat
     noSppi: dc?.noSppi ?? "",
     sppiBerlakuSd: dc?.sppiBerlakuSd ?? "",
     wilayahOperasi: dc?.wilayahOperasi ?? "",
-    dokumen: Object.fromEntries(
-      dok.map((d) => [
-        String(d.jenisDokumenId),
-        { fileKey: d.fileUrl, nomor: d.nomor ?? "", tglTerbit: d.tglTerbit ?? "", berlakuSd: d.berlakuSd ?? "" },
-      ]),
-    ),
+    ...pisahDokumen(dok),
     fotoKey: p.fotoUrl ?? "",
     ttdKey: p.ttdUrl ?? "",
     sidikJariKey: p.sidikJariUrl ?? "",
   }
+}
+
+type IsiDokumen = { fileKey: string; nomor: string; tglTerbit: string; berlakuSd: string }
+
+/** Berkas pertama tiap jenis masuk `dokumen`, sisanya (jenis jamak) masuk `dokumenTambahan`. */
+function pisahDokumen(dok: (typeof schema.dokumen.$inferSelect)[]) {
+  const dokumen: Record<string, IsiDokumen> = {}
+  const dokumenTambahan: Record<string, IsiDokumen[]> = {}
+  for (const d of [...dok].sort((a, b) => a.id - b.id)) {
+    const key = String(d.jenisDokumenId)
+    const isi = { fileKey: d.fileUrl, nomor: d.nomor ?? "", tglTerbit: d.tglTerbit ?? "", berlakuSd: d.berlakuSd ?? "" }
+    if (!dokumen[key]) dokumen[key] = isi
+    else (dokumenTambahan[key] ??= []).push(isi)
+  }
+  return { dokumen, dokumenTambahan }
 }
 
 /** Opsi formulir: perusahaan aktif di Polda operator & jenis dokumen aktif. */
@@ -63,6 +73,7 @@ export async function opsiFormulir(poldaId: number) {
         wajib: schema.jenisDokumen.wajib,
         wajibUntuk: schema.jenisDokumen.wajibUntuk,
         adaMasaBerlaku: schema.jenisDokumen.adaMasaBerlaku,
+        jamak: schema.jenisDokumen.jamak,
       })
       .from(schema.jenisDokumen)
       .where(eq(schema.jenisDokumen.aktif, true))

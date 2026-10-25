@@ -26,6 +26,7 @@ export type Dok = {
   wajib: boolean
   wajibUntuk: Jenis[] | null
   adaMasaBerlaku: boolean
+  jamak: boolean
   urutan: number
   aktif: boolean
 }
@@ -69,6 +70,7 @@ export function MasterDokumen({ rows }: { rows: Dok[] }) {
                         {d.wajib ? (d.wajibUntuk?.length ? `Wajib untuk ${d.wajibUntuk.map((w) => w.toLowerCase()).join(", ")}` : "Wajib") : "Opsional"}
                       </Tag>
                       {d.adaMasaBerlaku && <Tag cls="bg-info/10 text-info">Ada masa berlaku</Tag>}
+                      {d.jamak && <Tag cls="bg-primary/10 text-primary">Boleh lebih dari satu</Tag>}
                       {!d.aktif && <Tag cls="bg-muted text-muted-foreground">Nonaktif</Tag>}
                     </div>
                   </div>
@@ -107,7 +109,7 @@ function FormDokumen({ awal, urutanBaru, onClose, onSaved }: { awal: Dok | null;
     resolver: zodResolver(jenisDokumenSchema),
     defaultValues: awal
       ? { ...awal, wajibUntuk: awal.wajibUntuk ?? [] }
-      : { kode: "", nama: "", profesi: "UMUM", wajib: true, wajibUntuk: [], adaMasaBerlaku: false, urutan: urutanBaru, aktif: true },
+      : { kode: "", nama: "", profesi: "UMUM", wajib: true, wajibUntuk: [], adaMasaBerlaku: false, jamak: false, urutan: urutanBaru, aktif: true },
   })
   const err = f.formState.errors
 
@@ -163,6 +165,7 @@ function FormDokumen({ awal, urutanBaru, onClose, onSaved }: { awal: Dok | null;
           <div className="grid gap-3 sm:grid-cols-2">
             <Controller control={f.control} name="wajib" render={({ field }) => <Cek checked={field.value} onChange={field.onChange} label="Wajib" ket="Harus diunggah agar lolos verifikasi" />} />
             <Controller control={f.control} name="adaMasaBerlaku" render={({ field }) => <Cek checked={field.value} onChange={field.onChange} label="Ada masa berlaku" ket="Dicek tidak boleh kedaluwarsa" />} />
+            <Controller control={f.control} name="jamak" render={({ field }) => <Cek checked={field.value} onChange={field.onChange} label="Boleh lebih dari satu" ket="Operator bisa mengunggah beberapa berkas, mis. beberapa sertifikat" />} />
           </div>
           <Field label="Wajib hanya untuk jenis pengajuan (kosongkan = semua jenis)">
             <Controller

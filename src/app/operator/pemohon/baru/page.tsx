@@ -30,6 +30,7 @@ export default async function PendataanBaruPage({ searchParams }: { searchParams
         fotoKey: "",
         sppiBerlakuSd: "",
         dokumen: Object.fromEntries(Object.entries(data.dokumen ?? {}).filter(([id]) => !bermasa.has(id))),
+        dokumenTambahan: Object.fromEntries(Object.entries(data.dokumenTambahan ?? {}).filter(([id]) => !bermasa.has(id))),
       }
       asal = kartu!.noKta
     }

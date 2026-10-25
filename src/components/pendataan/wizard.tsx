@@ -17,6 +17,8 @@ import {
   Loader2,
   PenLine,
   RefreshCw,
+  Trash2,
+  Plus,
   TriangleAlert,
   Search,
   ShieldCheck,
@@ -24,7 +26,7 @@ import {
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState, useTransition } from "react"
-import { Controller, useForm, useWatch, type FieldPath } from "react-hook-form"
+import { Controller, useFieldArray, useForm, useWatch, type FieldPath, type UseFormReturn } from "react-hook-form"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -51,6 +53,7 @@ export type JenisDokumenOpsi = {
   wajib: boolean
   wajibUntuk: ("BARU" | "PERPANJANGAN" | "PENGGANTIAN")[] | null
   adaMasaBerlaku: boolean
+  jamak: boolean
 }
 
 const LANGKAH = [
@@ -93,6 +96,7 @@ const KOSONG: PendataanInput = {
   sppiBerlakuSd: "",
   wilayahOperasi: "",
   dokumen: {},
+  dokumenTambahan: {},
   fotoKey: "",
   ttdKey: "",
   sidikJariKey: "",
@@ -565,26 +569,8 @@ export function PendataanWizard({
                         </span>
                         {j.adaMasaBerlaku && <span className="rounded-full bg-info/10 px-2.5 py-0.5 text-sm font-medium text-info">Ada masa berlaku</span>}
                       </div>
-                      <div className="grid gap-4 lg:grid-cols-2">
-                        <Controller
-                          control={control}
-                          name={`dokumen.${key}.fileKey`}
-                          render={({ field: f }) => <FileField value={f.value} onChange={f.onChange} />}
-                        />
-                        <div className={cn("grid gap-3", j.adaMasaBerlaku ? "sm:grid-cols-3" : "sm:grid-cols-2")}>
-                          <Isian label="Nomor dokumen" kecil>
-                            <Input {...register(`dokumen.${key}.nomor`)} className="h-11 text-[15px]" />
-                          </Isian>
-                          <Isian label="Tanggal terbit" kecil opsional>
-                            <Input type="date" {...register(`dokumen.${key}.tglTerbit`)} className="h-11 text-[15px]" />
-                          </Isian>
-                          {j.adaMasaBerlaku && (
-                            <Isian label="Berlaku sampai" kecil>
-                              <Input type="date" {...register(`dokumen.${key}.berlakuSd`)} className="h-11 text-[15px]" />
-                            </Isian>
-                          )}
-                        </div>
-                      </div>
+                      <IsianDokumen form={form} awalan={`dokumen.${key}`} adaMasaBerlaku={j.adaMasaBerlaku} />
+                      {j.jamak && <DokumenTambahan form={form} jenisId={key} nama={j.nama} adaMasaBerlaku={j.adaMasaBerlaku} />}
                     </div>
                   )
                 })}
@@ -732,6 +718,58 @@ function Bagian({ judul, ket, children }: { judul: string; ket?: string; childre
       </div>
       {children}
     </section>
+  )
+}
+
+type FormPendataan = UseFormReturn<PendataanInput, unknown, PendataanData>
+
+/** Satu berkas dokumen: file + nomor + tanggal. `awalan` = jalur field, mis. `dokumen.7` atau `dokumenTambahan.7.0`. */
+function IsianDokumen({ form, awalan, adaMasaBerlaku }: { form: FormPendataan; awalan: string; adaMasaBerlaku: boolean }) {
+  const jalur = (f: string) => `${awalan}.${f}` as FieldPath<PendataanInput>
+  return (
+    <div className="grid gap-4 lg:grid-cols-2">
+      <Controller
+        control={form.control}
+        name={jalur("fileKey")}
+        render={({ field: f }) => <FileField value={f.value as string | undefined} onChange={f.onChange} />}
+      />
+      <div className={cn("grid gap-3", adaMasaBerlaku ? "sm:grid-cols-3" : "sm:grid-cols-2")}>
+        <Isian label="Nomor dokumen" kecil>
+          <Input {...form.register(jalur("nomor"))} className="h-11 text-[15px]" />
+        </Isian>
+        <Isian label="Tanggal terbit" kecil opsional>
+          <Input type="date" {...form.register(jalur("tglTerbit"))} className="h-11 text-[15px]" />
+        </Isian>
+        {adaMasaBerlaku && (
+          <Isian label="Berlaku sampai" kecil>
+            <Input type="date" {...form.register(jalur("berlakuSd"))} className="h-11 text-[15px]" />
+          </Isian>
+        )}
+      </div>
+    </div>
+  )
+}
+
+/** Berkas tambahan untuk jenis dokumen yang boleh lebih dari satu (mis. beberapa sertifikat). */
+function DokumenTambahan({ form, jenisId, nama, adaMasaBerlaku }: { form: FormPendataan; jenisId: string; nama: string; adaMasaBerlaku: boolean }) {
+  const { fields, append, remove } = useFieldArray({ control: form.control, name: `dokumenTambahan.${jenisId}` })
+  return (
+    <div className="mt-4 space-y-4">
+      {fields.map((f, i) => (
+        <div key={f.id} className="space-y-3 border-t pt-4">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-[15px] font-semibold text-muted-foreground">Berkas {i + 2}</p>
+            <Button type="button" variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => remove(i)}>
+              <Trash2 className="size-4" /> Hapus
+            </Button>
+          </div>
+          <IsianDokumen form={form} awalan={`dokumenTambahan.${jenisId}.${i}`} adaMasaBerlaku={adaMasaBerlaku} />
+        </div>
+      ))}
+      <Button type="button" variant="outline" className="h-11 text-[15px]" onClick={() => append({ fileKey: "", nomor: "", tglTerbit: "", berlakuSd: "" })}>
+        <Plus className="size-4" /> Tambah {nama.split(" ")[0].toLowerCase()} lain
+      </Button>
+    </div>
   )
 }
 

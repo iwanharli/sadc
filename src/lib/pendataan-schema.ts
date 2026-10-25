@@ -52,6 +52,8 @@ export const pendataanSchema = z.object({
 
   // kunci = id jenis dokumen
   dokumen: z.record(z.string(), dokumenInput).default({}),
+  // dokumen tambahan untuk jenis yang boleh lebih dari satu (mis. beberapa sertifikat); kunci = id jenis dokumen
+  dokumenTambahan: z.record(z.string(), z.array(dokumenInput)).default({}),
 
   fotoKey: opsional,
   ttdKey: opsional,

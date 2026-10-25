@@ -147,7 +147,10 @@ export async function simpanPendataan(
           wilayahOperasi: data.wilayahOperasi ?? null,
         })
       }
-      const dok = Object.entries(data.dokumen)
+      const dok = [
+        ...Object.entries(data.dokumen),
+        ...Object.entries(data.dokumenTambahan).flatMap(([jenisId, daftar]) => daftar.map((d) => [jenisId, d] as const)),
+      ]
         .filter(([, d]) => d.fileKey)
         .map(([jenisId, d]) => ({
           pengajuanId: id,

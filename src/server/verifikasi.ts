@@ -170,11 +170,18 @@ export const ATURAN: Aturan[] = [
           if (wajib) k.push(`${j.nama} belum diunggah`)
           continue
         }
-        if (!d.nomor) k.push(`Nomor ${j.nama} belum diisi`)
-        if (j.adaMasaBerlaku) {
-          if (!d.berlakuSd) k.push(`Masa berlaku ${j.nama} belum diisi`)
-          else if (d.berlakuSd < hariIni) k.push(`${j.nama} sudah kedaluwarsa`)
-        }
+        const tambahan = j.jamak ? (data.dokumenTambahan[String(j.id)] ?? []) : []
+        // baris tambahan yang dibiarkan kosong diabaikan
+        const isian = [d, ...tambahan.filter((t) => t.fileKey || t.nomor || t.tglTerbit || t.berlakuSd)]
+        isian.forEach((x, i) => {
+          const nama = isian.length > 1 ? `${j.nama} (berkas ${i + 1})` : j.nama
+          if (!x.fileKey) return void k.push(`${nama} belum diunggah`)
+          if (!x.nomor) k.push(`Nomor ${nama} belum diisi`)
+          if (j.adaMasaBerlaku) {
+            if (!x.berlakuSd) k.push(`Masa berlaku ${nama} belum diisi`)
+            else if (x.berlakuSd < hariIni) k.push(`${nama} sudah kedaluwarsa`)
+          }
+        })
       }
       return k
     },

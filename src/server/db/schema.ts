@@ -152,6 +152,8 @@ export const jenisDokumen = pgTable("jenis_dokumen", {
   // hanya wajib untuk jenis pengajuan tertentu (null = semua jenis)
   wajibUntuk: jenisPengajuanEnum("wajib_untuk").array(),
   adaMasaBerlaku: boolean("ada_masa_berlaku").notNull().default(false),
+  // boleh diunggah lebih dari satu (mis. beberapa sertifikat)
+  jamak: boolean("jamak").notNull().default(false),
   urutan: integer("urutan").notNull().default(0),
   aktif: boolean("aktif").notNull().default(true),
 }, (t) => [uniqueIndex("jenis_dokumen_kode_profesi").on(t.kode, t.profesi)])
