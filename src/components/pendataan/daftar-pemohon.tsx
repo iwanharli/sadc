@@ -1,17 +1,17 @@
 import Link from "next/link"
-import { ChevronLeft, ChevronRight, Search, Users } from "lucide-react"
+import { Search, Users } from "lucide-react"
 import { EmptyState } from "@/components/empty-state"
-import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
 import { formatTanggal } from "@/lib/waktu"
 import type { daftarPemohon } from "@/server/pendataan"
+import { Paginasi } from "./paginasi"
 import { labelProfesi, StatusBadge } from "./status-badge"
 
 type Hasil = Awaited<ReturnType<typeof daftarPemohon>>
-type Params = { q?: string; status?: string; profesi?: string; polda?: string; page?: string }
+type Params = { q?: string; status?: string; profesi?: string; polda?: string; page?: string; per?: string }
 
 const STATUS = [
   { v: "", t: "Semua" },
@@ -150,36 +150,15 @@ export function DaftarPemohon({
         </Table>
       )}
 
-      {hasil.pages > 1 && (
-        <div className="flex items-center justify-between gap-3 border-t px-6 py-4">
-          <p className="text-[15px] text-muted-foreground">
-            Halaman {hasil.page} dari {hasil.pages}
-          </p>
-          <div className="flex gap-2">
-            <Button variant="outline" asChild={hasil.page > 1} disabled={hasil.page <= 1}>
-              {hasil.page > 1 ? (
-                <Link href={href({ page: String(hasil.page - 1) })}>
-                  <ChevronLeft className="size-4" /> Sebelumnya
-                </Link>
-              ) : (
-                <span>
-                  <ChevronLeft className="size-4" /> Sebelumnya
-                </span>
-              )}
-            </Button>
-            <Button variant="outline" asChild={hasil.page < hasil.pages} disabled={hasil.page >= hasil.pages}>
-              {hasil.page < hasil.pages ? (
-                <Link href={href({ page: String(hasil.page + 1) })}>
-                  Berikutnya <ChevronRight className="size-4" />
-                </Link>
-              ) : (
-                <span>
-                  Berikutnya <ChevronRight className="size-4" />
-                </span>
-              )}
-            </Button>
-          </div>
-        </div>
+      {hasil.total > 0 && (
+        <Paginasi
+          page={hasil.page}
+          pages={hasil.pages}
+          total={hasil.total}
+          perPage={hasil.perPage}
+          basePath={basePath}
+          query={{ ...params }}
+        />
       )}
     </Card>
   )

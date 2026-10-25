@@ -1,7 +1,7 @@
 export const STATUS_KTA = ["AKTIF", "DIBEKUKAN", "DICABUT", "KEDALUWARSA"] as const
 export type StatusKta = (typeof STATUS_KTA)[number]
 
-export type FilterParams = { q?: string; status?: string; profesi?: string; polda?: string; page?: string }
+export type FilterParams = { q?: string; status?: string; profesi?: string; polda?: string; page?: string; per?: string }
 
 /** Ubah query string direktori menjadi filter yang tervalidasi. */
 export function parseFilter(sp: FilterParams) {

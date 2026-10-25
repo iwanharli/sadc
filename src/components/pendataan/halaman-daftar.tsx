@@ -17,9 +17,10 @@ export async function HalamanDaftar({ role, slug, sp }: { role: "OPERATOR" | "AD
   const info = DAFTAR_PROFESI[slug]
   const admin = role === "ADMIN"
   const f = parseFilter(sp)
+  const perPage = [10, 20, 50, 100].includes(Number(sp.per)) ? Number(sp.per) : 20
   const basePath = `/${admin ? "admin" : "operator"}/${slug}`
   const [hasil, wilayah, polda, tz] = await Promise.all([
-    daftarPemohon({ ...f, profesi: info.profesi, poldaId: admin ? f.poldaId : user.poldaId, page: Number(sp.page) || 1 }),
+    daftarPemohon({ ...f, profesi: info.profesi, poldaId: admin ? f.poldaId : user.poldaId, page: Number(sp.page) || 1, perPage }),
     admin ? Promise.resolve(null) : getPoldaNama(user.poldaId),
     admin ? db.select({ id: schema.polda.id, nama: schema.polda.nama }).from(schema.polda).orderBy(schema.polda.nama) : Promise.resolve([]),
     getZona(),
