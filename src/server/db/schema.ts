@@ -297,8 +297,9 @@ export const blacklist = pgTable("blacklist", {
 export const integrasiToken = pgTable("integrasi_token", {
   id: serial("id").primaryKey(),
   nama: text("nama").notNull(),
-  // token hanya disimpan sebagai SHA-256; awalan ditampilkan agar token bisa dikenali
+  // SHA-256 untuk pencocokan; salinan terenkripsi (AES-GCM) agar Admin bisa menyalinnya kembali
   tokenHash: varchar("token_hash", { length: 64 }).notNull().unique(),
+  tokenEnc: text("token_enc"),
   awalan: varchar("awalan", { length: 16 }).notNull(),
   // kosong = semua IP diizinkan
   ipIzin: text("ip_izin").array().notNull().default([]),

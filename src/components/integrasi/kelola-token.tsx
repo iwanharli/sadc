@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { formatIp } from "@/lib/ip"
 import { swal } from "@/lib/swal"
 import { cn } from "@/lib/utils"
-import { cabutToken, terbitkanToken } from "@/server/actions/integrasi"
+import { cabutToken, salinToken, terbitkanToken } from "@/server/actions/integrasi"
 
 export type BarisToken = {
   id: number
@@ -27,12 +27,27 @@ export type BarisToken = {
   terakhirDipakai: string | null
   ipTerakhir: string | null
   dicabut: string | null
+  bisaDisalin: boolean
 }
 
 export function KelolaToken({ rows }: { rows: BarisToken[] }) {
   const router = useRouter()
   const [buka, setBuka] = useState(false)
   const aktif = rows.filter((r) => r.aktif).length
+  const [tersalin, setTersalin] = useState<number>()
+
+  async function salin(r: BarisToken) {
+    const h = await salinToken(r.id)
+    if (!h.ok) return void toast.error(h.error)
+    try {
+      await navigator.clipboard.writeText(h.data.token)
+      setTersalin(r.id)
+      setTimeout(() => setTersalin((v) => (v === r.id ? undefined : v)), 2000)
+      toast.success(`Token ${r.nama} disalin`)
+    } catch {
+      toast.error("Browser menolak akses clipboard")
+    }
+  }
 
   async function cabut(r: BarisToken) {
     const res = await swal.fire({
@@ -88,6 +103,11 @@ export function KelolaToken({ rows }: { rows: BarisToken[] }) {
                   {r.dicabut && ` · dicabut ${r.dicabut}`}
                 </p>
               </div>
+              {r.aktif && r.bisaDisalin && (
+                <Button variant="outline" className="h-10" onClick={() => salin(r)}>
+                  {tersalin === r.id ? <Check className="size-4 text-success" /> : <Copy className="size-4" />} Salin token
+                </Button>
+              )}
               {r.aktif && (
                 <Button variant="outline" className="h-10 text-destructive hover:text-destructive" onClick={() => cabut(r)}>
                   <Trash2 className="size-4" /> Cabut
@@ -151,8 +171,8 @@ function DialogToken({ onClose }: { onClose: () => void }) {
             </div>
             <Alert>
               <KeyRound />
-              <AlertTitle>Token hanya ditampilkan sekali</AlertTitle>
-              <AlertDescription>SADC hanya menyimpan sidik token. Bila hilang, cabut token ini lalu buat yang baru.</AlertDescription>
+              <AlertTitle>Simpan token dengan aman</AlertTitle>
+              <AlertDescription>Token bisa disalin lagi dari daftar token oleh Admin; setiap penyalinan tercatat di Audit Log.</AlertDescription>
             </Alert>
             <DialogFooter>
               <Button className="h-11" onClick={onClose}>

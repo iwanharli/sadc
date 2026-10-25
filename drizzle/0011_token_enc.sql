@@ -1,0 +1,1 @@
+ALTER TABLE "integrasi_token" ADD COLUMN "token_enc" text;

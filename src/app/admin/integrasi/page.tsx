@@ -48,6 +48,7 @@ export default async function IntegrasiPage() {
             terakhirDipakai: r.terakhirDipakai ? formatWaktu(r.terakhirDipakai, tz) : null,
             ipTerakhir: r.ipTerakhir,
             dicabut: r.dicabutAt ? formatWaktu(r.dicabutAt, tz) : null,
+            bisaDisalin: !!r.tokenEnc,
           }))}
         />
         <ChartCard title="Endpoint" description={`${panggilan.n.toLocaleString("id-ID")} pemanggilan dalam 24 jam terakhir`}>
