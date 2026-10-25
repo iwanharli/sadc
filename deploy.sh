@@ -93,6 +93,8 @@ npm run --silent migrasi:tanpa-draf
 
 info "build (folder terpisah agar versi berjalan tidak terganggu)"
 rm -rf .next-build
+# tipe dari build lama bisa merujuk halaman yang sudah dihapus dan menggagalkan type-check
+rm -rf .next/types
 if ! NEXT_DIST_DIR=.next-build npm run build > /tmp/sadc-build.log 2>&1; then
   git checkout -q -- tsconfig.json 2>/dev/null || true
   tail -30 /tmp/sadc-build.log
