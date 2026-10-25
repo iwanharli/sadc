@@ -33,7 +33,7 @@ export default async function PerusahaanPage() {
       <PageHeader
         eyebrow="Data"
         title="Perusahaan"
-        description={`${bujp} BUJP · ${rows.length - bujp} perusahaan pembiayaan di seluruh Polda`}
+        description={`${bujp} BUJP · ${rows.length - bujp} PJPU di seluruh Polda`}
       />
       <MasterPerusahaan rows={rows} polda={polda} />
     </>

@@ -60,7 +60,7 @@ export function MasterPerusahaan({ rows, polda }: { rows: Perusahaan[]; polda: P
           <Input value={q} onChange={(e) => { setQ(e.target.value); setBatas(PER) }} placeholder="Cari nama atau NIB..." className="h-11 pl-10 text-[15px]" />
         </div>
         <div className="inline-flex rounded-xl border bg-background p-1">
-          {[["", "Semua"], ["BUJP", "BUJP"], ["PEMBIAYAAN", "Pembiayaan"]].map(([v, t]) => (
+          {[["", "Semua"], ["BUJP", "BUJP"], ["PEMBIAYAAN", "PJPU"]].map(([v, t]) => (
             <button
               key={v}
               onClick={() => { setJenis(v as typeof jenis); setBatas(PER) }}
@@ -110,7 +110,7 @@ export function MasterPerusahaan({ rows, polda }: { rows: Perusahaan[]; polda: P
               </TableCell>
               <TableCell>
                 <span className={cn("rounded-full px-2.5 py-1 text-sm font-medium", r.jenis === "BUJP" ? "bg-series-satpam/15 text-series-satpam" : "bg-series-dc/15 text-series-dc")}>
-                  {r.jenis === "BUJP" ? "BUJP" : "Pembiayaan"}
+                  {r.jenis === "BUJP" ? "BUJP" : "PJPU"}
                 </span>
               </TableCell>
               <TableCell>{r.polda?.replace(/^Polda /, "") ?? "—"}</TableCell>
@@ -176,7 +176,7 @@ function FormPerusahaan({ awal, polda, onClose, onSaved }: { awal: Perusahaan | 
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="text-xl">{awal ? "Ubah perusahaan" : "Tambah perusahaan"}</DialogTitle>
-          <DialogDescription className="text-[15px]">BUJP untuk Satpam, perusahaan pembiayaan untuk Penagih Utang.</DialogDescription>
+          <DialogDescription className="text-[15px]">BUJP untuk Satpam, PJPU untuk Penagih Utang.</DialogDescription>
         </DialogHeader>
         <form onSubmit={simpan} className="space-y-4">
           <Field label="Nama perusahaan" galat={err.nama?.message}>
@@ -194,7 +194,7 @@ function FormPerusahaan({ awal, polda, onClose, onSaved }: { awal: Perusahaan | 
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="BUJP" className="text-[15px]">BUJP (jasa pengamanan)</SelectItem>
-                      <SelectItem value="PEMBIAYAAN" className="text-[15px]">Perusahaan pembiayaan</SelectItem>
+                      <SelectItem value="PEMBIAYAAN" className="text-[15px]">PJPU</SelectItem>
                     </SelectContent>
                   </Select>
                 )}
