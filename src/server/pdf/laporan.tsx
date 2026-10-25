@@ -116,7 +116,7 @@ export function LaporanPdf({
           rows={perusahaan}
           kolom={[
             { t: "Perusahaan", w: 40, v: (r: Perusahaan) => r.nama },
-            { t: "Jenis", w: 12, v: (r) => (r.jenis === "BUJP" ? "BUJP" : "Pembiayaan") },
+            { t: "Jenis", w: 12, v: (r) => (r.jenis === "BUJP" ? "BUJP" : "PJPU") },
             { t: "Polda", w: 18, v: (r) => r.polda.replace(/^Polda /, "") },
             { t: "Didata", w: 10, kanan: true, v: (r) => nf.format(r.pendataan) },
             { t: "KTA terbit", w: 10, kanan: true, v: (r) => nf.format(r.terbit) },

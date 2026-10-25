@@ -55,8 +55,8 @@ const DOKUMEN: Dok[] = [
   { kode: "SK_BUJP", nama: "Surat keterangan kerja / penugasan dari BUJP", profesi: "SATPAM" },
   { kode: "KTA_LAMA", nama: "KTA lama", profesi: "SATPAM", wajibUntuk: ["PERPANJANGAN", "PENGGANTIAN"] },
   { kode: "SPPI", nama: "Sertifikat profesi penagihan (lembaga terdaftar OJK)", profesi: "DEBT_COLLECTOR", adaMasaBerlaku: true },
-  { kode: "SURAT_TUGAS", nama: "Surat tugas / kuasa dari perusahaan pembiayaan", profesi: "DEBT_COLLECTOR" },
-  { kode: "IZIN_PERUSAHAAN", nama: "NIB / izin usaha perusahaan pembiayaan (OJK)", profesi: "DEBT_COLLECTOR" },
+  { kode: "SURAT_TUGAS", nama: "Surat tugas / kuasa dari PJPU", profesi: "DEBT_COLLECTOR" },
+  { kode: "IZIN_PERUSAHAAN", nama: "NIB / izin usaha PJPU", profesi: "DEBT_COLLECTOR" },
   { kode: "KTA_LAMA", nama: "KTA lama", profesi: "DEBT_COLLECTOR", wajibUntuk: ["PERPANJANGAN", "PENGGANTIAN"] },
 ]
 

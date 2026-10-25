@@ -48,7 +48,7 @@ export function KtaPdf({ d }: { d: NonNullable<DataCetak> }) {
           <View style={{ flex: 1 }}>
             <Text style={k.nama}>{d.pemohon.nama.toUpperCase()}</Text>
             <Text style={k.noKta}>{d.kartu.noKta}</Text>
-            <Text style={k.label}>{d.pengajuan.profesi === "SATPAM" ? "BUJP / Perusahaan" : "Perusahaan pembiayaan"}</Text>
+            <Text style={k.label}>{d.pengajuan.profesi === "SATPAM" ? "BUJP / Perusahaan" : "PJPU"}</Text>
             <Text style={k.nilai}>{d.perusahaan ?? "-"}</Text>
             <View style={{ flexDirection: "row", gap: 10 }}>
               {gada(d) && (

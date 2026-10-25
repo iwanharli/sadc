@@ -78,7 +78,7 @@ Jenis pengajuan: **Baru**, **Perpanjangan**, **Penggantian**. Perpanjangan/pengg
 Pengajuan hanya bisa disimpan (dan KTA diterbitkan) jika semua kondisi berikut terpenuhi:
 
 1. Biodata wajib terisi; NIK 16 digit valid, tidak memiliki KTA aktif/dibekukan dengan profesi yang sama, dan **tidak masuk blacklist**.
-2. Perusahaan (BUJP / perusahaan pembiayaan) dipilih dan berstatus aktif.
+2. Perusahaan (BUJP / PJPU) dipilih dan berstatus aktif.
 3. Semua dokumen **wajib** sesuai profesi & jenis pengajuan sudah diunggah, dengan nomor dokumen terisi.
 4. Dokumen yang memiliki masa berlaku (SKCK, surat sehat, bebas narkoba, SPPI) **belum kedaluwarsa** pada tanggal pengajuan.
 5. Biometrik lengkap: foto wajah, sidik jari, tanda tangan.
@@ -130,8 +130,8 @@ Aturan:
 | Kode | Dokumen | Wajib |
 |---|---|:-:|
 | SPPI | Sertifikat profesi penagihan (lembaga terdaftar OJK) | ✅ |
-| SURAT_TUGAS | Surat tugas / kuasa dari perusahaan pembiayaan | ✅ |
-| IZIN_PERUSAHAAN | NIB / izin usaha perusahaan pembiayaan (OJK) | ✅ |
+| SURAT_TUGAS | Surat tugas / kuasa dari PJPU | ✅ |
+| IZIN_PERUSAHAAN | NIB / izin usaha PJPU | ✅ |
 | KTA_LAMA | KTA lama | Kondisional |
 
 ## 6. Peta Halaman (Sitemap)
@@ -165,7 +165,7 @@ Aturan:
 - `/admin/pemohon/[id]` — detail + aksi bekukan/cabut/aktifkan (form alasan & bukti)
 - `/admin/sanksi` — daftar KTA dibekukan/dicabut, pembekuan yang melewati batas waktu
 - `/admin/blacklist` — daftar NIK diblokir, cabut blokir
-- `/admin/perusahaan` — master BUJP & perusahaan pembiayaan
+- `/admin/perusahaan` — master BUJP & PJPU
 - `/admin/master/dokumen` — atur persyaratan dokumen per profesi
 - `/admin/pengguna` — kelola akun operator & admin (tambah, ubah, nonaktifkan, reset sandi)
 - `/admin/audit` — audit log

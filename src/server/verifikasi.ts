@@ -126,7 +126,7 @@ export const ATURAN: Aturan[] = [
     nama: "Perusahaan valid",
     cek: async ({ data }) => {
       const jenis = data.profesi === "SATPAM" ? "BUJP" : "PEMBIAYAAN"
-      const label = data.profesi === "SATPAM" ? "BUJP / perusahaan" : "Perusahaan pembiayaan"
+      const label = data.profesi === "SATPAM" ? "BUJP / perusahaan" : "PJPU"
       if (!data.perusahaanId) return [`${label} belum dipilih`]
       const p = await db.query.perusahaan.findFirst({ where: eq(schema.perusahaan.id, data.perusahaanId) })
       if (!p || p.jenis !== jenis) return [`${label} tidak valid`]

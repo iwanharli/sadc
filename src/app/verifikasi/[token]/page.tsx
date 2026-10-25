@@ -89,7 +89,7 @@ export default async function VerifikasiPage({ params }: { params: Promise<{ tok
               </dl>
             </div>
             <dl className="grid grid-cols-2 gap-x-6 gap-y-4 border-t px-6 py-5">
-              <Baris label={k.profesi === "SATPAM" ? "BUJP / perusahaan" : "Perusahaan pembiayaan"} nilai={k.perusahaan ?? "—"} className="col-span-2" />
+              <Baris label={k.profesi === "SATPAM" ? "BUJP / perusahaan" : "PJPU"} nilai={k.perusahaan ?? "—"} className="col-span-2" />
               <Baris label="Wilayah" nilai={k.polda} />
               <Baris label="Berlaku sampai" nilai={formatTanggal(k.berlakuSd, tz)} />
             </dl>

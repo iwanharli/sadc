@@ -53,7 +53,7 @@ export type JenisDokumenOpsi = {
 const LANGKAH = [
   { judul: "Jenis pengajuan", ket: "Profesi, jenis, & NIK", icon: ClipboardCheck },
   { judul: "Biodata & alamat", ket: "Sesuai KTP", icon: UserRound },
-  { judul: "Perusahaan & profesi", ket: "BUJP / pembiayaan", icon: Briefcase },
+  { judul: "Perusahaan & profesi", ket: "BUJP / PJPU", icon: Briefcase },
   { judul: "Dokumen", ket: "Unggah persyaratan", icon: FileText },
   { judul: "Biometrik", ket: "Foto, sidik jari, TTD", icon: Fingerprint },
   { judul: "Ringkasan", ket: "Periksa & simpan", icon: BadgeCheck },
@@ -282,7 +282,7 @@ export function PendataanWizard({
                       <div className="grid gap-4 sm:grid-cols-2">
                         {[
                           { v: "SATPAM", t: "Satpam", d: "Satuan Pengamanan · KTA & sertifikat Gada", icon: ShieldCheck },
-                          { v: "DEBT_COLLECTOR", t: "Penagih Utang", d: "Penagih utang · mitra perusahaan pembiayaan", icon: HandCoins },
+                          { v: "DEBT_COLLECTOR", t: "Penagih Utang", d: "Penagih utang · bertugas di PJPU", icon: HandCoins },
                         ].map((o) => (
                           <button
                             key={o.v}
@@ -450,7 +450,7 @@ export function PendataanWizard({
             {/* 3. Perusahaan & profesi */}
             {step === 2 && (
               <>
-                <Isian label={profesi === "SATPAM" ? "BUJP / perusahaan tempat bertugas" : "Perusahaan pembiayaan pemberi tugas"}>
+                <Isian label={profesi === "SATPAM" ? "BUJP / perusahaan tempat bertugas" : "PJPU tempat bertugas"}>
                   <Controller
                     control={control}
                     name="perusahaanId"

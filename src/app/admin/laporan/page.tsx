@@ -37,7 +37,7 @@ export default async function LaporanPage({ searchParams }: { searchParams: Prom
         }
       />
 
-      <SectionLabel title="Perusahaan" hint="BUJP & perusahaan pembiayaan" />
+      <SectionLabel title="Perusahaan" hint="BUJP & PJPU" />
       <div className="grid gap-5 xl:grid-cols-5">
         <ChartCard className="xl:col-span-2" title="Pendataan terbanyak" description={`12 perusahaan teratas · ${periode} hari`}>
           {top.length ? (
@@ -45,7 +45,7 @@ export default async function LaporanPage({ searchParams }: { searchParams: Prom
               <PerusahaanChart data={top} />
               <div className="mt-3 flex gap-5 text-sm text-muted-foreground">
                 <span className="flex items-center gap-2"><span className="size-3 rounded-sm bg-series-satpam" /> BUJP</span>
-                <span className="flex items-center gap-2"><span className="size-3 rounded-sm bg-series-dc" /> Pembiayaan</span>
+                <span className="flex items-center gap-2"><span className="size-3 rounded-sm bg-series-dc" /> PJPU</span>
               </div>
             </>
           ) : (
@@ -68,7 +68,7 @@ export default async function LaporanPage({ searchParams }: { searchParams: Prom
                   <TableCell className="py-3.5 pl-6">
                     <p className="font-semibold">{p.nama}</p>
                     <p className="text-sm text-muted-foreground">
-                      {p.jenis === "BUJP" ? "BUJP" : "Pembiayaan"} · {p.polda.replace(/^Polda /, "")}
+                      {p.jenis === "BUJP" ? "BUJP" : "PJPU"} · {p.polda.replace(/^Polda /, "")}
                     </p>
                   </TableCell>
                   <TableCell className="text-right tabular-nums">{nf.format(p.pendataan)}</TableCell>

@@ -57,6 +57,13 @@
       "when": 1792861826988,
       "tag": "0007_nik_terenkripsi",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792948962544,
+      "tag": "0008_label_pjpu",
+      "breakpoints": true
     }
   ]
 }

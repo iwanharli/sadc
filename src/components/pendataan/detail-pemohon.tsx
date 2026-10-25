@@ -70,7 +70,7 @@ export function DetailPemohon({ d, tz, aksiKta }: { d: Detail; tz: string; aksiK
               <Item label="Profesi" value={labelProfesi(p.profesi)} />
               <Item label="Jenis pengajuan" value={labelJenis(p.jenis)} />
               <Item label="Nomor registrasi" value={p.noRegistrasi} mono />
-              <Item label={p.profesi === "SATPAM" ? "BUJP / perusahaan" : "Perusahaan pembiayaan"} value={d.perusahaan?.nama} className="lg:col-span-2" />
+              <Item label={p.profesi === "SATPAM" ? "BUJP / perusahaan" : "PJPU"} value={d.perusahaan?.nama} className="lg:col-span-2" />
               <Item label="Polda" value={d.polda.nama} />
               {p.profesi === "SATPAM" ? (
                 <>
