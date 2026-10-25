@@ -174,7 +174,7 @@ function FormPerusahaan({
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="text-xl">{awal ? "Ubah perusahaan" : "Tambah perusahaan"}</DialogTitle>
-          <DialogDescription className="text-[15px]">BUJP untuk Satpam, PJPU untuk Penagih Utang.</DialogDescription>
+          <DialogDescription className="text-[15px]">BUJP untuk Satpam, PJPU untuk Petugas Penagih.</DialogDescription>
         </DialogHeader>
         <form onSubmit={simpan} className="space-y-4">
           <Field label="Nama perusahaan" galat={err.nama?.message}>

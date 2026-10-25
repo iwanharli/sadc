@@ -34,7 +34,7 @@ export type Dok = {
 const GRUP = [
   { v: "UMUM", t: "Umum (semua profesi)" },
   { v: "SATPAM", t: "Khusus Satpam" },
-  { v: "DEBT_COLLECTOR", t: "Khusus Penagih Utang" },
+  { v: "DEBT_COLLECTOR", t: "Khusus Petugas Penagih" },
 ] as const
 const JENIS: { v: Jenis; t: string }[] = [
   { v: "BARU", t: "Baru" },

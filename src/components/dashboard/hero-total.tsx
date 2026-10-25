@@ -79,7 +79,7 @@ export function HeroTotal({
           </span>
           <span className="flex items-center gap-2">
             <span className="size-3 rounded-full bg-[oklch(0.85_0.14_80)]" />
-            Penagih Utang <b className="tabular-nums">{nf.format(dc)}</b>
+            Petugas Penagih <b className="tabular-nums">{nf.format(dc)}</b>
             <span className="text-hero-foreground/70">({persen(dc)}%)</span>
           </span>
         </div>

@@ -33,7 +33,7 @@ export const operatorNav: NavGroup[] = [
     items: [
       { href: "/operator/pemohon/baru", label: "Pendataan Baru", icon: UserPlus },
       { href: "/operator/satpam", label: "Daftar Satpam", icon: ShieldCheck },
-      { href: "/operator/penagih-utang", label: "Daftar Penagih Utang", icon: HandCoins },
+      { href: "/operator/petugas-penagih", label: "Daftar Petugas Penagih", icon: HandCoins },
     ],
   },
   {
@@ -54,7 +54,7 @@ export const adminNav: NavGroup[] = [
     label: "Data",
     items: [
       { href: "/admin/satpam", label: "Daftar Satpam", icon: ShieldCheck },
-      { href: "/admin/penagih-utang", label: "Daftar Penagih Utang", icon: HandCoins },
+      { href: "/admin/petugas-penagih", label: "Daftar Petugas Penagih", icon: HandCoins },
       {
         href: "/admin/perusahaan",
         label: "Daftar Perusahaan",

@@ -82,7 +82,7 @@ export default async function OperatorHome({ searchParams }: { searchParams: Pro
         >
           {r.total === 0 ? (
             <div className="p-5">
-              <EmptyState icon={Users} title="Belum ada pendataan" description="Mulai mendata Satpam atau Penagih Utang." />
+              <EmptyState icon={Users} title="Belum ada pendataan" description="Mulai mendata Satpam atau Petugas Penagih." />
             </div>
           ) : (
             <RecentList items={terbaru} showPolda={false} />

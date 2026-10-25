@@ -23,7 +23,7 @@ const STATUS = [
 const PROFESI = [
   { v: "", t: "Semua profesi" },
   { v: "SATPAM", t: "Satpam" },
-  { v: "DEBT_COLLECTOR", t: "Penagih Utang" },
+  { v: "DEBT_COLLECTOR", t: "Petugas Penagih" },
 ]
 
 

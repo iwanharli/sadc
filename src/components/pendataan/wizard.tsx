@@ -178,7 +178,7 @@ export function PendataanWizard({
         return
       }
       const riwayat = hasil.riwayat
-        .map((r) => `<li><b>${r.noRegistrasi}</b> · ${r.profesi === "SATPAM" ? "Satpam" : "Penagih Utang"} · ${r.kartu ?? r.status}</li>`)
+        .map((r) => `<li><b>${r.noRegistrasi}</b> · ${r.profesi === "SATPAM" ? "Satpam" : "Petugas Penagih"} · ${r.kartu ?? r.status}</li>`)
         .join("")
       const ok = await swal.fire({
         icon: "question",
@@ -212,7 +212,7 @@ export function PendataanWizard({
         await swal.fire({
           icon: "error",
           title: "Gagal menyimpan",
-          html: `${pesanGalat(e)}<br/><br/>Sebelum menyimpan ulang, pastikan di Daftar Satpam / Penagih Utang bahwa data ini belum tersimpan.`,
+          html: `${pesanGalat(e)}<br/><br/>Sebelum menyimpan ulang, pastikan di Daftar Satpam / Petugas Penagih bahwa data ini belum tersimpan.`,
           confirmButtonText: "Tutup",
         })
         return
@@ -312,7 +312,7 @@ export function PendataanWizard({
                       <div className="grid gap-4 sm:grid-cols-2">
                         {[
                           { v: "SATPAM", t: "Satpam", d: "Satuan Pengamanan · KTA & sertifikat Gada", icon: ShieldCheck },
-                          { v: "DEBT_COLLECTOR", t: "Penagih Utang", d: "Penagih utang · bertugas di PJPU", icon: HandCoins },
+                          { v: "DEBT_COLLECTOR", t: "Petugas Penagih", d: "Penagihan utang · bertugas di PJPU", icon: HandCoins },
                         ].map((o) => (
                           <button
                             key={o.v}

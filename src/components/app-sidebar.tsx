@@ -46,7 +46,7 @@ export function AppSidebar({ role, wilayah }: { role: "ADMIN" | "OPERATOR"; wila
           </div>
           <div className="grid min-w-0 leading-tight group-data-[collapsible=icon]:hidden">
             <span className="truncate text-base font-bold tracking-tight">SADC Polri</span>
-            <span className="truncate text-xs text-muted-foreground">Pendataan Satpam &amp; Penagih Utang</span>
+            <span className="truncate text-xs text-muted-foreground">Pendataan Satpam &amp; Petugas Penagih</span>
           </div>
         </Link>
         <div className="mt-4 h-px bg-sidebar-border group-data-[collapsible=icon]:hidden" />

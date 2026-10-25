@@ -12,7 +12,7 @@ import {
 
 const config = {
   satpam: { label: "Satpam", color: "var(--series-satpam)" },
-  dc: { label: "Penagih Utang", color: "var(--series-dc)" },
+  dc: { label: "Petugas Penagih", color: "var(--series-dc)" },
 } satisfies ChartConfig
 
 const fmtTgl = (v: string, opts: Intl.DateTimeFormatOptions) =>

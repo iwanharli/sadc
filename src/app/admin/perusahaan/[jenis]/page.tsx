@@ -10,7 +10,7 @@ type SP = { q?: string; polda?: string; page?: string; per?: string }
 
 const JENIS = {
   bujp: { kode: "BUJP", judul: "Daftar BUJP", ket: "Badan Usaha Jasa Pengamanan — tempat bertugas Satpam" },
-  pjpu: { kode: "PEMBIAYAAN", judul: "Daftar PJPU", ket: "Perusahaan Jasa Penagihan Utang — tempat bertugas Penagih Utang" },
+  pjpu: { kode: "PEMBIAYAAN", judul: "Daftar PJPU", ket: "Perusahaan Jasa Penagihan Utang — tempat bertugas Petugas Penagih" },
 } as const
 
 export default async function PerusahaanPage({

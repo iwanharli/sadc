@@ -75,7 +75,7 @@ export function LaporanPdf({
       <Page size="A4" style={s.page}>
         <View style={s.kop}>
           <Text style={s.kecil}>KEPOLISIAN NEGARA REPUBLIK INDONESIA · BADAN PEMELIHARA KEAMANAN</Text>
-          <Text style={s.judul}>Laporan Pendataan Satpam & Penagih Utang</Text>
+          <Text style={s.judul}>Laporan Pendataan Satpam & Petugas Penagih</Text>
           <Text style={{ marginTop: 3, color: "#334155" }}>
             Periode {periode} hari ({rentang}) · Nasional
           </Text>
@@ -91,7 +91,7 @@ export function LaporanPdf({
           ))}
         </View>
         <Text style={{ marginTop: 6, color: "#334155" }}>
-          Pendataan periode ini terdiri dari {nf.format(tren.satpam)} Satpam dan {nf.format(tren.dc)} Penagih Utang
+          Pendataan periode ini terdiri dari {nf.format(tren.satpam)} Satpam dan {nf.format(tren.dc)} Petugas Penagih
           {tren.perubahan !== null
             ? `, ${tren.perubahan >= 0 ? "naik" : "turun"} ${Math.abs(tren.perubahan).toLocaleString("id-ID", { maximumFractionDigits: 1 })}% dibanding periode sebelumnya`
             : ""}
@@ -104,7 +104,7 @@ export function LaporanPdf({
           kolom={[
             { t: "Polda", w: 55, v: (r: Polda) => r.nama },
             { t: "Satpam", w: 15, kanan: true, v: (r) => nf.format(r.satpam) },
-            { t: "Penagih Utang", w: 15, kanan: true, v: (r) => nf.format(r.dc) },
+            { t: "Petugas Penagih", w: 15, kanan: true, v: (r) => nf.format(r.dc) },
             { t: "Total", w: 15, kanan: true, v: (r) => nf.format(r.total) },
           ]}
         />

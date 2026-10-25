@@ -6,6 +6,13 @@ const nextConfig: NextConfig = {
   distDir: process.env.NEXT_DIST_DIR || ".next",
   // indikator dev Next.js di kanan bawah agar tidak menutupi kartu wilayah di sidebar
   devIndicators: { position: "bottom-right" },
+  // alamat lama sebelum istilah "Penagih Utang" diganti "Petugas Penagih"
+  async redirects() {
+    return [
+      { source: "/admin/penagih-utang", destination: "/admin/petugas-penagih", permanent: true },
+      { source: "/operator/penagih-utang", destination: "/operator/petugas-penagih", permanent: true },
+    ]
+  },
   // header keamanan untuk semua halaman
   async headers() {
     const produksi = process.env.NODE_ENV === "production"

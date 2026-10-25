@@ -11,7 +11,7 @@ import { getZona } from "@/server/zona"
 import { DaftarPemohon } from "./daftar-pemohon"
 import { FilterPolda } from "./filter-polda"
 
-/** Halaman daftar pemohon untuk satu profesi (Satpam / Penagih Utang), Operator atau Admin. */
+/** Halaman daftar pemohon untuk satu profesi (Satpam / Petugas Penagih), Operator atau Admin. */
 export async function HalamanDaftar({ role, slug, sp }: { role: "OPERATOR" | "ADMIN"; slug: SlugProfesi; sp: FilterParams }) {
   const user = await requireUser(role)
   const info = DAFTAR_PROFESI[slug]

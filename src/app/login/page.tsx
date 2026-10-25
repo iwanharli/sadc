@@ -39,7 +39,7 @@ export default async function LoginPage() {
             aman di lapangan.
           </h1>
           <p className="text-lg text-hero-foreground/80">
-            Satu sistem untuk mendata, menerbitkan, dan mengawasi KTA Satpam serta Penagih Utang di seluruh Polda.
+            Satu sistem untuk mendata, menerbitkan, dan mengawasi KTA Satpam serta Petugas Penagih di seluruh Polda.
           </p>
           <div className="flex flex-wrap gap-2">
             {["Pendataan", "Verifikasi otomatis", "Pengawasan"].map((t) => (
@@ -50,7 +50,7 @@ export default async function LoginPage() {
           </div>
         </div>
 
-        <p className="text-sm text-hero-foreground/60">SADC · Sistem Pendataan Satpam &amp; Penagih Utang</p>
+        <p className="text-sm text-hero-foreground/60">SADC · Sistem Pendataan Satpam &amp; Petugas Penagih</p>
       </section>
 
       {/* Panel kanan: form */}

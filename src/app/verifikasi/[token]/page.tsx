@@ -84,7 +84,7 @@ export default async function VerifikasiPage({ params }: { params: Promise<{ tok
               )}
               <dl className="min-w-0 space-y-3">
                 <Baris label="Nama" nilai={samarkanNama(k.nama)} />
-                <Baris label="Profesi" nilai={k.profesi === "SATPAM" ? "Satuan Pengamanan (Satpam)" : "Penagih Utang"} />
+                <Baris label="Profesi" nilai={k.profesi === "SATPAM" ? "Satuan Pengamanan (Satpam)" : "Petugas Penagih"} />
                 <Baris label="Nomor KTA" nilai={k.noKta} mono />
               </dl>
             </div>

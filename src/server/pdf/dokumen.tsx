@@ -11,7 +11,7 @@ const EMAS = "#d97706"
 const fmt = (v: string) =>
   new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(v + "T00:00:00Z"))
 
-const profesi = (d: DataCetak) => (d!.pengajuan.profesi === "SATPAM" ? "SATUAN PENGAMANAN" : "PENAGIH UTANG")
+const profesi = (d: DataCetak) => (d!.pengajuan.profesi === "SATPAM" ? "SATUAN PENGAMANAN" : "PETUGAS PENAGIH")
 const gada = (d: DataCetak) => (d!.jenjangGada ? `Gada ${d!.jenjangGada[0]}${d!.jenjangGada.slice(1).toLowerCase()}` : null)
 
 const k = StyleSheet.create({
@@ -41,7 +41,7 @@ export function KtaPdf({ d }: { d: NonNullable<DataCetak> }) {
             <Text style={k.hJudul}>KARTU TANDA ANGGOTA</Text>
             <Text style={k.hSub}>Baharkam Polri · {d.polda.nama}</Text>
           </View>
-          <Text style={k.badge}>{d.pengajuan.profesi === "SATPAM" ? "SATPAM" : "PENAGIH UTANG"}</Text>
+          <Text style={k.badge}>{d.pengajuan.profesi === "SATPAM" ? "SATPAM" : "PETUGAS PENAGIH"}</Text>
         </View>
         <View style={k.body}>
           {d.foto ? <Image src={d.foto} style={k.foto} /> : <View style={k.fotoKosong} />}
@@ -104,7 +104,7 @@ const s = StyleSheet.create({
 })
 
 export function SertifikatPdf({ d }: { d: NonNullable<DataCetak> }) {
-  const jabatan = d.pengajuan.profesi === "SATPAM" ? "Satuan Pengamanan (Satpam)" : "Penagih Utang"
+  const jabatan = d.pengajuan.profesi === "SATPAM" ? "Satuan Pengamanan (Satpam)" : "Petugas Penagih"
   return (
     <Document title={`Sertifikat ${d.kartu.noKta}`} author="SADC Baharkam Polri">
       <Page size="A4" orientation="landscape" style={s.page}>
