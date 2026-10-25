@@ -1,5 +1,5 @@
 import { randomBytes } from "node:crypto"
-import { and, eq, inArray, ne } from "drizzle-orm"
+import { and, eq, inArray, like, ne, sql } from "drizzle-orm"
 import { db, schema } from "./db"
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0]
@@ -52,7 +52,13 @@ export async function terbitkanKartu(
       dicetakAt: new Date(),
     })
     .returning({ id: schema.kartu.id })
-  const noKta = `${p.profesi === "SATPAM" ? "S" : "D"}-${p.poldaKode}-${p.terbit.slice(0, 4)}-${pad(kartu.id, 6)}`
+  // nomor urut mengikuti id kartu, tetapi tidak boleh menabrak nomor yang sudah ada (mis. data impor/demo)
+  const awalan = `${p.profesi === "SATPAM" ? "S" : "D"}-${p.poldaKode}-${p.terbit.slice(0, 4)}-`
+  const [{ terbesar }] = await tx
+    .select({ terbesar: sql<number>`coalesce(max(substring(${schema.kartu.noKta} from '(\\d+)$')::int), 0)` })
+    .from(schema.kartu)
+    .where(like(schema.kartu.noKta, `${awalan}%`))
+  const noKta = `${awalan}${pad(Math.max(kartu.id, Number(terbesar) + 1), 6)}`
   await tx.update(schema.kartu).set({ noKta }).where(eq(schema.kartu.id, kartu.id))
   await tx.update(schema.pengajuan).set({ status: "DICETAK" }).where(eq(schema.pengajuan.id, p.pengajuanId))
   return { kartuId: kartu.id, noKta, diganti: lama.length }
