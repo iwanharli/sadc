@@ -27,7 +27,14 @@ function rapikan(geo: Geo): Geo {
 }
 
 let cache: Promise<Geo> | null = null
-const muatGeo = () => (cache ??= fetch("/geo/provinsi.geojson").then((r) => r.json()).then(rapikan))
+const muatGeo = () =>
+  (cache ??= fetch("/geo/provinsi.geojson")
+    .then((r) => r.json())
+    .then(rapikan)
+    .catch((e) => {
+      cache = null // izinkan dicoba lagi pada render berikutnya
+      throw e
+    }))
 
 /** Peta choropleth jumlah pendataan per Polda (provinsi diwarnai menurut Polda yang mencakupnya). */
 export function PetaSebaran({ rekap, isi }: { rekap: Rekap[]; isi?: boolean }) {
@@ -35,7 +42,9 @@ export function PetaSebaran({ rekap, isi }: { rekap: Rekap[]; isi?: boolean }) {
   const [hover, setHover] = useState<{ p: Prop; x: number; y: number } | null>(null)
 
   useEffect(() => {
-    muatGeo().then(setGeo)
+    muatGeo()
+      .then(setGeo)
+      .catch(() => {})
   }, [])
 
   const perProv = useMemo(() => {

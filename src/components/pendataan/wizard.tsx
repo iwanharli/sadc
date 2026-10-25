@@ -16,12 +16,13 @@ import {
   HandCoins,
   Loader2,
   PenLine,
+  RefreshCw,
   Search,
   ShieldCheck,
   UserRound,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { useEffect, useState, useTransition } from "react"
+import { useCallback, useEffect, useState, useTransition } from "react"
 import { Controller, useForm, useWatch, type FieldPath } from "react-hook-form"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -31,6 +32,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { PENDIDIKAN, pendataanSchema, type PendataanData, type PendataanInput } from "@/lib/pendataan-schema"
+import { pesanGalat } from "@/lib/jaringan"
 import { swal } from "@/lib/swal"
 import { cn } from "@/lib/utils"
 import { cekNik, periksaPendataan, simpanPendataan } from "@/server/actions/pendataan"
@@ -129,12 +131,17 @@ export function PendataanWizard({
   const dokumenProfesi = jenisDokumen.filter((d) => d.profesi === "UMUM" || d.profesi === profesi)
   const perusahaanProfesi = perusahaan.filter((p) => p.jenis === (profesi === "SATPAM" ? "BUJP" : "PEMBIAYAAN"))
 
+  const periksaUlang = useCallback(() => {
+    setPeriksa(null)
+    periksaPendataan(getValues())
+      .then(setPeriksa)
+      .catch((e) => setPeriksa({ ok: false, error: pesanGalat(e, "Gagal memeriksa persyaratan") }))
+  }, [getValues])
+
   // jalankan pemeriksaan otomatis setiap masuk langkah ringkasan
   useEffect(() => {
-    if (step !== LANGKAH.length - 1) return
-    setPeriksa(null)
-    periksaPendataan(getValues()).then(setPeriksa)
-  }, [step, getValues])
+    if (step === LANGKAH.length - 1) periksaUlang()
+  }, [step, periksaUlang])
 
   async function ke(target: number) {
     if (target > step) {
@@ -154,7 +161,13 @@ export function PendataanWizard({
     if (!(await trigger("nik"))) return
     setCekNikLoading(true)
     try {
-      const hasil = await cekNik(getValues("nik"))
+      let hasil: Awaited<ReturnType<typeof cekNik>>
+      try {
+        hasil = await cekNik(getValues("nik"))
+      } catch (e) {
+        await swal.fire({ icon: "error", title: "Gagal mengecek NIK", text: pesanGalat(e), confirmButtonText: "Tutup" })
+        return
+      }
       if (!hasil) {
         await swal.fire({ icon: "info", title: "NIK belum terdaftar", text: "Lanjutkan pendataan sebagai pemohon baru.", confirmButtonText: "Oke" })
         return
@@ -186,7 +199,19 @@ export function PendataanWizard({
         await swal.fire({ icon: "warning", title: "Periksa kembali isian", text: "Ada format isian yang belum benar.", confirmButtonText: "Oke" })
         return
       }
-      const res = await simpanPendataan(getValues())
+      // tidak diulang otomatis: menyimpan dua kali bisa menerbitkan KTA ganda
+      let res: Awaited<ReturnType<typeof simpanPendataan>>
+      try {
+        res = await simpanPendataan(getValues())
+      } catch (e) {
+        await swal.fire({
+          icon: "error",
+          title: "Gagal menyimpan",
+          html: `${pesanGalat(e)}<br/><br/>Sebelum menyimpan ulang, pastikan di Daftar Satpam / Penagih Utang bahwa data ini belum tersimpan.`,
+          confirmButtonText: "Tutup",
+        })
+        return
+      }
       if (!res.ok) {
         const daftar = res.kekurangan?.length
           ? `<ul style="text-align:left;margin-top:10px;line-height:1.7;list-style:disc;padding-left:20px">${res.kekurangan
@@ -588,7 +613,7 @@ export function PendataanWizard({
             )}
 
             {/* 6. Ringkasan */}
-            {step === 5 && <Ringkasan periksa={periksa} />}
+            {step === 5 && <Ringkasan periksa={periksa} onUlang={periksaUlang} />}
           </div>
 
           <div className="flex flex-wrap items-center gap-3 border-t bg-muted/30 px-6 py-4 md:px-8">
@@ -620,7 +645,7 @@ export function PendataanWizard({
   )
 }
 
-function Ringkasan({ periksa }: { periksa: HasilPeriksa | null }) {
+function Ringkasan({ periksa, onUlang }: { periksa: HasilPeriksa | null; onUlang: () => void }) {
   if (!periksa) {
     return (
       <div className="flex items-center gap-3 py-10 text-[15px] text-muted-foreground">
@@ -633,7 +658,12 @@ function Ringkasan({ periksa }: { periksa: HasilPeriksa | null }) {
       <Alert variant="destructive">
         <CircleAlert />
         <AlertTitle>Gagal memeriksa</AlertTitle>
-        <AlertDescription>{periksa.error}</AlertDescription>
+        <AlertDescription className="flex flex-wrap items-center justify-between gap-3">
+          <span>{periksa.error}</span>
+          <Button type="button" variant="outline" size="sm" onClick={onUlang}>
+            <RefreshCw className="size-4" /> Periksa ulang
+          </Button>
+        </AlertDescription>
       </Alert>
     )
   }

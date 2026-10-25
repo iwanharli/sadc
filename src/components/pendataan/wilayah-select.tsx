@@ -1,6 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { toast } from "sonner"
+import { denganUlang } from "@/lib/jaringan"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
@@ -9,10 +11,18 @@ const cache = new Map<string, Opsi[]>()
 
 async function anak(parent: string) {
   if (cache.has(parent)) return cache.get(parent)!
-  const res = await fetch(`/api/wilayah${parent ? `?parent=${encodeURIComponent(parent)}` : ""}`)
-  const rows: Opsi[] = res.ok ? await res.json() : []
-  cache.set(parent, rows)
-  return rows
+  try {
+    const rows = await denganUlang(async () => {
+      const res = await fetch(`/api/wilayah${parent ? `?parent=${encodeURIComponent(parent)}` : ""}`)
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      return (await res.json()) as Opsi[]
+    }, 2)
+    cache.set(parent, rows) // hanya hasil yang berhasil yang disimpan
+    return rows
+  } catch {
+    toast.error("Daftar wilayah gagal dimuat. Pilih ulang untuk mencoba lagi.")
+    return []
+  }
 }
 
 function useOpsi(parent: string | undefined, aktif: boolean) {
